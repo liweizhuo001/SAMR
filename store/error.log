@@ -12530,3 +12530,596 @@ INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Consistency
 INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Class Taxonomy Computation started
 INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Class Taxonomy Computation using 8 workers
 INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Class Taxonomy Computation finished in 16 ms
+INFO main org.semanticweb.elk.reasoner.Reasoner - ELK reasoner was created
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://cmt#acceptPaper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://cmt#siteURL> <http://www.w3.org/2001/XMLSchema#anyURI>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#virtualMeetingEnabledBy> <http://cmt#Administrator>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#hasCo-author> <http://cmt#Co-author>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#enableVirtualMeeting> <http://cmt#virtualMeetingEnabledBy>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#markConflictOfInterest> <http://cmt#Paper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://cmt#hasBid>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#hardcopyMailingManifestsPrintedBy> <http://cmt#printHardcopyMailingManifests>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#paperAssignmentFinalizedBy> <http://cmt#Administrator>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#hardcopyMailingManifestsPrintedBy> <http://cmt#Administrator>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#assignedByAdministrator> <http://cmt#Administrator>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#hasBeenAssigned> <http://cmt#assignedTo>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://cmt#acceptedBy>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#assignedByReviewer> <http://cmt#Reviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://cmt#name>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://cmt#writePaper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://cmt#paperID> <http://cmt#Paper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#runPaperAssignmentTools> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#adjustedBy> <http://cmt#adjustBid>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#readPaper> <http://cmt#Paper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#acceptedBy> <http://cmt#Administrator>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#addedBy> <http://cmt#Administrator>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://cmt#email> <http://www.w3.org/2001/XMLSchema#string>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://cmt#logoURL> <http://www.w3.org/2001/XMLSchema#anyURI>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#memberOfConference> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#hasDecision> <http://cmt#Decision>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#reviewerBiddingStartedBy> <http://cmt#Administrator>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#memberOfProgramCommittee> <http://cmt#ProgramCommittee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#submitPaper> <http://cmt#Paper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectMinCardinality. Axiom ignored:
+SubClassOf(<http://cmt#Paper> ObjectMinCardinality(1 <http://cmt#readByReviewer>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#assignReviewer> <http://cmt#Reviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#assignExternalReviewer> <http://cmt#ExternalReviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#hasBeenAssigned> <http://cmt#Paper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#acceptPaper> <http://cmt#Paper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#rejectPaper> <http://cmt#Paper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://cmt#logoURL>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://cmt#maxPapers>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataMinCardinality . Axiom ignored:
+SubClassOf(<http://cmt#Conference> DataExactCardinality(1 <http://cmt#reviewsPerPaper>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://cmt#hasAuthor>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#adjustBid> <http://cmt#Bid>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#hasProgramCommitteeMember> <http://cmt#ProgramCommitteeMember>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#addedBy> <http://cmt#addProgramCommitteeMember>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://cmt#title> <http://cmt#Paper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#adjustedBy> <http://cmt#Reviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://cmt#acceptsHardcopySubmissions> <http://www.w3.org/2001/XMLSchema#boolean>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://cmt#addedBy>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#reviewCriteriaEnteredBy> <http://cmt#Administrator>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#hasAuthor> <http://cmt#Author>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://cmt#readByMeta-Reviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://cmt#acceptPaper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#paperAssignmentFinalizedBy> <http://cmt#finalizePaperAssignment>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#memberOfConference> <http://cmt#hasConferenceMember>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#enableVirtualMeeting> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#endReview> <http://cmt#Review>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectMaxCardinality. Axiom ignored:
+SubClassOf(<http://cmt#Paper> ObjectMaxCardinality(1 <http://cmt#readByMeta-Reviewer>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#reviewCriteriaEnteredBy> <http://cmt#enterReviewCriteria>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://cmt#name> ObjectUnionOf(<http://cmt#Conference> <http://cmt#Person>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#co-writePaper> <http://cmt#Paper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://cmt#reviewsPerPaper> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#rejectPaper> <http://cmt#rejectedBy>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectMinCardinality. Axiom ignored:
+SubClassOf(<http://cmt#Paper> ObjectMinCardinality(0 <http://cmt#hasDecision>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://cmt#rejectedBy>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://cmt#addProgramCommitteeMember>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#paperAssignmentToolsRunBy> <http://cmt#runPaperAssignmentTools>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectMaxCardinality. Axiom ignored:
+SubClassOf(<http://cmt#Paper> ObjectMaxCardinality(1 <http://cmt#hasDecision>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://cmt#maxPapers> <http://www.w3.org/2001/XMLSchema#int>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#detailsEnteredBy> <http://cmt#enterConferenceDetails>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://cmt#name> <http://www.w3.org/2001/XMLSchema#string>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#assignedByAdministrator> <http://cmt#assignReviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://cmt#title>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#writtenBy> <http://cmt#Reviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#rejectedBy> <http://cmt#Administrator>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://cmt#acceptedBy>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://cmt#reviewsPerPaper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#hasBid> <http://cmt#Bid>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#enterConferenceDetails> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#setMaxPapers> <http://cmt#ProgramCommitteeMember>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#acceptedBy> <http://cmt#acceptPaper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#detailsEnteredBy> <http://cmt#Administrator>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://cmt#date> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#writePaper> <http://cmt#Paper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://cmt#date> <http://www.w3.org/2001/XMLSchema#date>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#enterReviewCriteria> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://cmt#reviewsPerPaper> <http://www.w3.org/2001/XMLSchema#int>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://cmt#hasDecision>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://cmt#paperID>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectExactCardinality. Axiom ignored:
+SubClassOf(<http://cmt#ExternalReviewer> ObjectExactCardinality(1 <http://cmt#assignedByReviewer>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://cmt#paperID> <http://www.w3.org/2001/XMLSchema#unsignedLong>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#finalizePaperAssignment> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://cmt#assignExternalReviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#paperAssignmentToolsRunBy> <http://cmt#Administrator>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#readByReviewer> <http://cmt#readPaper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#startReviewerBidding> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#assignedTo> <http://cmt#Reviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://cmt#adjustBid>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://cmt#writeReview>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#hasProgramCommitteeMember> <http://cmt#memberOfProgramCommittee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataMinCardinality. Axiom ignored:
+SubClassOf(<http://cmt#Conference> DataMinCardinality(1 <http://cmt#date>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://cmt#siteURL> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#hasAuthor> <http://cmt#writePaper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#reviewerBiddingStartedBy> <http://cmt#startReviewerBidding>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#addProgramCommitteeMember> <http://cmt#ProgramCommitteeMember>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#hasSubjectArea> <http://cmt#SubjectArea>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataMinCardinality . Axiom ignored:
+SubClassOf(<http://cmt#Conference> DataExactCardinality(1 <http://cmt#name>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://cmt#logoURL> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#hasConferenceMember> <http://cmt#ConferenceMember>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://cmt#siteURL>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://cmt#adjustedBy>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://cmt#maxPapers> <http://cmt#ProgramCommitteeMember>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://cmt#rejectPaper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#hasCo-author> <http://cmt#co-writePaper>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://cmt#acceptsHardcopySubmissions> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#hasConflictOfInterest> <http://cmt#Document>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#writtenBy> <http://cmt#writeReview>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#writeReview> <http://cmt#Review>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#readByReviewer> <http://cmt#Reviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#readByMeta-Reviewer> <http://cmt#Meta-Reviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://cmt#writtenBy>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://cmt#acceptsHardcopySubmissions>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://cmt#assignedByReviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://cmt#printHardcopyMailingManifests> <http://cmt#Conference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://cmt#assignExternalReviewer> <http://cmt#assignedByReviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://cmt#email> <http://cmt#Person>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://cmt#title> <http://www.w3.org/2001/XMLSchema#string>)
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Loading of Axioms started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Loading of Axioms using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Loading of Axioms finished in 0 ms
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Property Saturation Initialization started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Property Saturation Initialization using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Property Saturation Initialization finished in 0 ms
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Reflexive Property Computation started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Reflexive Property Computation using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Reflexive Property Computation finished in 4 ms
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Object Property Hierarchy and Composition Computation started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Object Property Hierarchy and Composition Computation using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Object Property Hierarchy and Composition Computation finished in 3 ms
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Context Initialization started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Context Initialization using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Context Initialization finished in 0 ms
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Consistency Checking started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Consistency Checking using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Consistency Checking finished in 11 ms
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Class Taxonomy Computation started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Class Taxonomy Computation using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Class Taxonomy Computation finished in 34 ms
+INFO main org.semanticweb.elk.reasoner.Reasoner - ELK reasoner was created
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#has_an_organizing_committee> <http://conference#was_an_organizing_committee_of>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#has_the_last_name> <http://conference#Person>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#has_important_dates> <http://conference#belong_to_a_conference_volume>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#has_gender> <http://conference#Person>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#was_a_committee_of> <http://conference#has_a_commtitee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_commtitee> <http://conference#Committee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#is_a_starting_date> <http://www.w3.org/2001/XMLSchema#date>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://conference#has_a_track-workshop-tutorial_chair>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#has_a_committee_co-chair> <http://conference#was_a_committe_co-chair_of>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://conference#has_a_review_expertise>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_track-workshop-tutorial_topic> <http://conference#Topic>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_review_reference_or_expertise> ObjectUnionOf(<http://conference#Review_expertise> <http://conference#Review_preference>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_parts> <http://conference#Conference_part>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#has_a_volume> <http://conference#Conference_proceedings>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_an_organizing_committee> <http://conference#Organizing_committee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#is_a_full_paper_submission_date>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://conference#has_a_program_committee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_authors> <http://conference#Person>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#has_an_email> <http://conference#Person>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#has_a_name> <http://www.w3.org/2001/XMLSchema#string>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#is_a_full_paper_submission_date> <http://www.w3.org/2001/XMLSchema#date>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://conference#has_an_abstract>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_submitted_contribution> <http://conference#Submitted_contribution>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#has_a_degree> <http://conference#Review_preference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://conference#issues>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://conference#was_an_organizing_committee_of>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#is_given_by> <http://conference#Active_conference_participant>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://conference#has_a_submitted_contribution>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#is_the_1th_part_of> ObjectUnionOf(<http://conference#Paper> <http://conference#Poster> <http://conference#Presentation>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#has_the_last_name>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#is_a_full_paper_submission_date> <http://conference#Important_dates>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#contributes> <http://conference#Conference_document>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://conference#has_a_committee_chair>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#was_a_committee_chair_of> <http://conference#Committee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#belong_to_a_conference_volume> <http://conference#Conference_volume>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#has_a_date_of_issue> <http://conference#Conference_document>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://conference#is_the_1th_part_of>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#is_submitted_at> <http://conference#has_contributions>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#has_a_date_of_issue> <http://www.w3.org/2001/XMLSchema#date>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#has_a_program_committee> <http://conference#was_a_program_committee_of>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://conference#was_a_steering_committee_of>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#is_a_date_of_acceptance_announcement>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#gives_presentations> <http://conference#Presentation>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#is_an_ending_date> <http://conference#Important_dates>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectAllValuesFrom. Axiom ignored:
+SubClassOf(<http://conference#Review> ObjectAllValuesFrom(<http://conference#has_authors> <http://conference#Reviewer>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_committee_chair> <http://conference#Chair>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://conference#was_a_track-workshop_chair_of>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#is_an_abstract_submission_date>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#is_an_ending_date>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_steering_committee> <http://conference#Steering_committee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_an_abstract> <http://conference#Abstract>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://conference#was_a_committee_chair_of>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#belongs_to_reviewers> <http://conference#Reviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#has_gender> DataOneOf("female"^^<http://www.w3.org/2001/XMLSchema#string> "male"^^<http://www.w3.org/2001/XMLSchema#string>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#was_a_track-workshop_chair_of> <http://conference#Conference_part>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#has_a_volume> <http://www.w3.org/2001/XMLSchema#int>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_topic_or_a_submission_contribution> ObjectUnionOf(<http://conference#Submitted_contribution> <http://conference#Topic>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#has_a_URL> <http://conference#Conference_www>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#has_an_email> <http://www.w3.org/2001/XMLSchema#string>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#is_a_date_of_camera_ready_paper_submission> <http://www.w3.org/2001/XMLSchema#date>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#was_a_member_of> <http://conference#Committee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#has_the_first_name> <http://conference#Person>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_tracks> <http://conference#Track>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#contributes> <http://conference#has_authors>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#reviews> <http://conference#Reviewed_contribution>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#has_a_URL> <http://www.w3.org/2001/XMLSchema#string>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#is_an_abstract_submission_date> <http://conference#Important_dates>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#belongs_to_a_review_reference> <http://conference#Review_preference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#has_been_assigned_a_review_reference> <http://conference#has_a_topic_or_a_submission_contribution>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#has_a_committee_chair> <http://conference#was_a_committee_chair_of>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#is_part_of_conference_volumes> <http://conference#Conference_volume>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://conference#belong_to_a_conference_volume>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#has_a_degree> <http://www.w3.org/2001/XMLSchema#int>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_workshops> <http://conference#Workshop>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_tutorials> <http://conference#Tutorial>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#has_a_publisher> <http://conference#issues>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://conference#has_a_steering_committee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#is_a_date_of_acceptance_announcement> <http://conference#Important_dates>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#has_gender>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#has_a_location> <http://www.w3.org/2001/XMLSchema#string>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#has_a_name> ObjectUnionOf(<http://conference#Conference> <http://conference#Conference_part> <http://conference#Conference_proceedings> <http://conference#Publisher> <http://conference#Topic>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#has_an_ISBN> <http://conference#Conference_proceedings>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#was_a_program_committee_of> <http://conference#Conference_volume>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://conference#belongs_to_a_review_reference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#is_a_topis_of_conference_parts> <http://conference#Conference_part>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_track-workshop-tutorial_chair> <http://conference#Track-workshop_chair>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://conference#has_a_review>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#is_part_of_conference_volumes> <http://conference#has_parts>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#is_a_date_of_acceptance_announcement> <http://www.w3.org/2001/XMLSchema#date>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#is_a_topis_of_conference_parts> <http://conference#has_a_track-workshop-tutorial_topic>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#issues> <http://conference#Conference_proceedings>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#has_a_review_reference_or_expertise> <http://conference#belongs_to_reviewers>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_been_assigned_a_review_reference> <http://conference#Review_preference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#has_a_URL>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#is_a_date_of_camera_ready_paper_submission>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#has_a_date_of_issue>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_review_expertise> <http://conference#Review_expertise>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://conference#was_a_program_committee_of>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#has_a_name>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_review> <http://conference#Review>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#has_the_last_name> <http://www.w3.org/2001/XMLSchema#string>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#was_a_member_of> <http://conference#has_members>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#has_the_first_name> <http://www.w3.org/2001/XMLSchema#string>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#was_a_committee_of> <http://conference#Conference_volume>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_members> <http://conference#Committee_member>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#has_a_submitted_contribution> <http://conference#has_a_review_expertise>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_contributions> <http://conference#Conference_contribution>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://conference#has_an_organizing_committee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#has_a_degree>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#is_an_ending_date> <http://www.w3.org/2001/XMLSchema#date>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#was_an_organizing_committee_of> <http://conference#Conference_volume>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#is_the_1th_part_of> <http://conference#has_an_abstract>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#was_a_steering_committee_of> <http://conference#Conference_volume>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#is_a_date_of_camera_ready_paper_submission> <http://conference#Important_dates>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://conference#has_important_dates>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#has_a_steering_committee> <http://conference#was_a_steering_committee_of>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#has_an_ISBN> <http://www.w3.org/2001/XMLSchema#string>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#is_submitted_at> <http://conference#Conference_volume>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_committee_co-chair> <http://conference#Co-chair>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.IndexedObjectUnionOf - ELK does not support positive occurrences of ObjectUnionOf. Reasoning might be incomplete!
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#invited_by> <http://conference#invites_co-reviewers>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#has_an_expertise> DataOneOf("high"^^<http://www.w3.org/2001/XMLSchema#string> "low"^^<http://www.w3.org/2001/XMLSchema#string> "medium"^^<http://www.w3.org/2001/XMLSchema#string> "very high"^^<http://www.w3.org/2001/XMLSchema#string>))
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#invites_co-reviewers> <http://conference#Reviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#has_an_ISBN>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseFunctionalObjectProperty. Axiom ignored:
+InverseFunctionalObjectProperty(<http://conference#has_been_assigned_a_review_reference>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://conference#has_a_topic_or_a_submission_contribution>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#invited_by> <http://conference#Reviewer>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#was_a_track-workshop_chair_of> <http://conference#has_a_track-workshop-tutorial_chair>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://conference#has_a_publisher>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#was_a_committe_co-chair_of> <http://conference#Committee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#is_given_by> <http://conference#gives_presentations>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#has_a_volume>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_important_dates> <http://conference#Important_dates>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#has_a_location> <http://conference#Conference_volume>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalObjectProperty. Axiom ignored:
+FunctionalObjectProperty(<http://conference#reviews>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#is_a_starting_date> <http://conference#Important_dates>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#has_an_expertise>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_publisher> <http://conference#Publisher>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support InverseObjectProperties. Axiom ignored:
+InverseObjectProperties(<http://conference#reviews> <http://conference#has_a_review>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyRange. Axiom ignored:
+DataPropertyRange(<http://conference#is_an_abstract_submission_date> <http://www.w3.org/2001/XMLSchema#date>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support FunctionalDataProperty. Axiom ignored:
+FunctionalDataProperty(<http://conference#is_a_starting_date>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support ObjectPropertyRange. Axiom ignored:
+ObjectPropertyRange(<http://conference#has_a_program_committee> <http://conference#Program_committee>)
+WARN main org.semanticweb.elk.reasoner.indexing.hierarchy.ChangeIndexingProcessor - ELK does not support DataPropertyDomain. Axiom ignored:
+DataPropertyDomain(<http://conference#has_an_expertise> <http://conference#Review_expertise>)
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Loading of Axioms started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Loading of Axioms using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Loading of Axioms finished in 0 ms
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Property Saturation Initialization started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Property Saturation Initialization using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Property Saturation Initialization finished in 0 ms
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Reflexive Property Computation started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Reflexive Property Computation using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Reflexive Property Computation finished in 0 ms
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Object Property Hierarchy and Composition Computation started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Object Property Hierarchy and Composition Computation using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Object Property Hierarchy and Composition Computation finished in 0 ms
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Context Initialization started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Context Initialization using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Context Initialization finished in 0 ms
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Consistency Checking started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Consistency Checking using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Consistency Checking finished in 0 ms
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Class Taxonomy Computation started
+INFO main org.semanticweb.elk.reasoner.stages.AbstractReasonerStage - Class Taxonomy Computation using 8 workers
+INFO main org.semanticweb.elk.reasoner.stages.LoggingStageExecutor - Class Taxonomy Computation finished in 17 ms
