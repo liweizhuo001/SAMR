@@ -19,7 +19,9 @@
 package aml.filter;
 
 import java.math.BigDecimal;
+import java.security.spec.MGF1ParameterSpec;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -31,10 +33,16 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.Map.Entry;
+
+import org.gephi.layout.plugin.force.yifanHu.YifanHuLayout.ElectricalForce;
+
 import java.util.Set;
 import java.util.TreeMap;
 
+import com.hp.hpl.jena.util.iterator.Filter;
+import com.sun.javafx.collections.SetAdapterChange;
 import com.sun.org.apache.bcel.internal.generic.IfInstruction;
+import com.sun.webkit.graphics.Ref;
 
 import aml.AML;
 import aml.match.Mapping;
@@ -57,8 +65,11 @@ public class RepairerGraph implements Flagger
 	private RepairMapGraph rMap;
 	private InteractionManager im;
 	private Vector<Mapping> maps;
+	private ArrayList<Mapping> reliableMappings;
 	private ArrayList<Mapping> wantMappings;
 	private ArrayList<Mapping> unwantMappings;
+	private Random generator;
+	private int error_user;
 	
 	public int approveNum,rejectNum,iteration;
 	
@@ -75,9 +86,69 @@ public class RepairerGraph implements Flagger
 			rMap = aml.buildRepairMapGraph();
 		im = aml.getInteractionManager();
 		maps=aml.getAlignment().getMappingSet();
+		reliableMappings =new ArrayList<Mapping>();
 		wantMappings =new ArrayList<Mapping>();
 		unwantMappings=new ArrayList<Mapping>();
+		//generator = new Random(Calendar.getInstance().getTimeInMillis());
+		generator = new Random();
+		error_user = 5;
+	}
+	
+	private boolean isUserFailing(){
 		
+		int random_num = generator.nextInt(100);
+		
+		if (random_num < error_user){
+			return true;
+		}
+		return false;
+		
+	}
+	
+	public void obtainReliableMappings()
+	{
+		//find the incoherent set ID
+		HashSet<Integer> indexSet=new HashSet<Integer>();
+		indexSet.addAll(rMap.MapMinimalConflictSet.keySet());
+		Vector<Mapping> filterMaps=filterSet(maps,indexSet);
+		//Vector<Mapping> reliableMappings =new Vector<Mapping>();;
+		Vector<Mapping> tempReliableMappings =rMap.structureRefine(filterMaps,indexSet);
+		//æ ¹æ®è¿”å›žçš„ç»“æžœè¿›è¡Œæ ‡è®°
+		for(Mapping m: tempReliableMappings)
+		{
+			
+			int sourceId=m.getSourceId();
+			int targetId=m.getTargetId();
+			double sim=m.getSimilarity();
+			if(sim>=0.0) // threshold constraint
+			{		
+				Mapping realMapping = aml.getAlignment().getBidirectional(sourceId, targetId);
+				m.setStatus(MappingStatus.CORRECT);
+				realMapping.setStatus(MappingStatus.CORRECT);
+				//rMap.updateConflictSet(m,reliableMappings,unwantMappings);
+				rMap.updateGraph(m);
+				reliableMappings.add(m);
+			}
+			//aml.getAlignment().get(sourceId, targetId).setStatus(MappingStatus.CORRECT);
+		}	
+		
+//		System.out.println("The size of MinimalConflictSet is "+ rMap.MinimalConflictSet.size());
+//		System.out.println("The size of MapMinimalConflictSet is "+ rMap.MapMinimalConflictSet.size());
+	}
+	public Vector<Mapping> filterSet(Vector<Mapping> mappings, HashSet<Integer> indexs)
+	{
+		Vector<Mapping> set=new Vector<Mapping>();
+		Vector<Mapping> tempMappings=new Vector<Mapping>();
+		tempMappings.addAll(maps);
+		for(int i:indexs)
+		{
+			Mapping map=tempMappings.get(i);
+			set.add(map);
+		}
+		Vector<Mapping> filterset=new Vector<Mapping>();
+		filterset.addAll(mappings);
+		filterset.removeAll(set);
+		return filterset;
 	}
 	
 	public void One2OneRevisedMappings()
@@ -89,29 +160,29 @@ public class RepairerGraph implements Flagger
 		while(true)
 		{
 			System.out.println("The iteration is "+(iteration++));
-			int mappingIndex = randomSelect(); //ÔÚÎ´±ê¼ÇµÄÊý¾ÝÖÐËæ»ú³éÈ¡
+			int mappingIndex = randomSelect(); //ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡
 			if(mappingIndex != -1)
 			{			
 				Scanner sc = new Scanner(System.in);  
-				System.out.println("µ±Ç°mappingÎª£º\n"+maps.get(mappingIndex).toString());
-				//´òÓ¡mappingµÄcontextÐÅÏ¢
+				System.out.println("ï¿½ï¿½Ç°mappingÎªï¿½ï¿½\n"+maps.get(mappingIndex).toString());
+				//ï¿½ï¿½Ó¡mappingï¿½ï¿½contextï¿½ï¿½Ï¢
 				printDetailInformation(maps.get(mappingIndex));
-		        System.out.println("ÊäÈëÄúµÄÅÐ¶Ï(Y/N):");  
+		        System.out.println("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½(Y/N):");  
 		        if(sc.nextLine().equalsIgnoreCase("Y"))
 		        { 	   		        	
-		            System.out.println("Ö´ÐÐ×¨¼ÒÈÏÍ¬µÄ²Ù×÷");  
+		            System.out.println("Ö´ï¿½ï¿½×¨ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Ä²ï¿½ï¿½ï¿½");  
 		            rMap.one2oneRestriction(mappingIndex,wantMappings,unwantMappings);	
 		            approveNum++;
 		        }
-		        else //ºóÃæÔÙÀ©Õ¹³ÉunknownµÄÇé¿ö
+		        else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½unknownï¿½ï¿½ï¿½ï¿½ï¿½
 		        {  
-		        	System.out.println("Ö´ÐÐ×¨¼Ò¾Ü¾ø²Ù×÷"); 
+		        	System.out.println("Ö´ï¿½ï¿½×¨ï¿½Ò¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½"); 
 		        	System.out.println("The mapping needs to be removed.");
-					rMap.simpleReject(mappingIndex,wantMappings,unwantMappings);	  //Èô½«´Ë¾Ö×¢Ïú£¬Ôò»Ø¹éµ½Christian¡¯ ToolµÄ·½·¨£¬¼´¾Ü¾øÎÞÓ°Ïì
+					rMap.simpleReject(mappingIndex,wantMappings,unwantMappings);	  //ï¿½ï¿½ï¿½ï¿½ï¿½Ë¾ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¹éµ½Christianï¿½ï¿½ Toolï¿½Ä·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
 					rejectNum++;
 		        } 				
 			}
-			else //ÒÑ¾­²»´æÔÚ´íÎóµÄmappingÁË
+			else //ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½
 			{
 				break;
 			}
@@ -167,7 +238,7 @@ public class RepairerGraph implements Flagger
 		System.out.print(" Saving: "+ String.format("%1$.1f", saving)+"%\n");
 		aml.removeIncorrect();		
 		maps=tempMappings;
-		//Ö÷ÒªÊÇÎªÁËË¢ÐÂ½ÇÉ«ËùÒýÆðµÄ¶àÓàmappings¼¯ºÏ
+		//ï¿½ï¿½Òªï¿½ï¿½Îªï¿½ï¿½Ë¢ï¿½Â½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½
 		aml.getAlignment().getMappingSet().retainAll(tempMappings);
 	}
 	
@@ -180,29 +251,29 @@ public class RepairerGraph implements Flagger
 		while(true)
 		{
 			System.out.println("The iteration is "+(iteration++));
-			int mappingIndex = getCandidateMappingByStructure(); //Christian¡¯ ToolµÄÔ­Ê¼µÄÓÅ»¯·½°¸
+			int mappingIndex = getCandidateMappingByStructure(); //Christianï¿½ï¿½ Toolï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½
 			if(mappingIndex != -1)
 			{			
 				Scanner sc = new Scanner(System.in);  
-				System.out.println("µ±Ç°mappingÎª£º\n"+maps.get(mappingIndex).toString());
-				//´òÓ¡mappingµÄcontextÐÅÏ¢
+				System.out.println("ï¿½ï¿½Ç°mappingÎªï¿½ï¿½\n"+maps.get(mappingIndex).toString());
+				//ï¿½ï¿½Ó¡mappingï¿½ï¿½contextï¿½ï¿½Ï¢
 				printDetailInformation(maps.get(mappingIndex));
-		        System.out.println("ÊäÈëÄúµÄÅÐ¶Ï(Y/N):");  
+		        System.out.println("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½(Y/N):");  
 		        if(sc.nextLine().equalsIgnoreCase("Y"))
 		        { 	   		        	
-		            System.out.println("Ö´ÐÐ×¨¼ÒÈÏÍ¬µÄ²Ù×÷");  
-		            rMap.entailBasedApprove(mappingIndex,wantMappings,unwantMappings); //Christian¡¯ ToolµÄÖ§³Ö·½·¨ ÐÞÕý°æ±¾
+		            System.out.println("Ö´ï¿½ï¿½×¨ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Ä²ï¿½ï¿½ï¿½");  
+		            rMap.entailBasedApprove(mappingIndex,wantMappings,unwantMappings); //Christianï¿½ï¿½ Toolï¿½ï¿½Ö§ï¿½Ö·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾
 		            approveNum++;
 		        }
-		        else //ºóÃæÔÙÀ©Õ¹³ÉunknownµÄÇé¿ö
+		        else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½unknownï¿½ï¿½ï¿½ï¿½ï¿½
 		        {  
-		        	System.out.println("Ö´ÐÐ×¨¼Ò¾Ü¾ø²Ù×÷"); 
+		        	System.out.println("Ö´ï¿½ï¿½×¨ï¿½Ò¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½"); 
 		        	System.out.println("The mapping needs to be removed.");
-					rMap.simpleReject(mappingIndex,wantMappings,unwantMappings); //¼´¾Ü¾øÎÞÓ°Ïì
+					rMap.simpleReject(mappingIndex,wantMappings,unwantMappings); //ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
 					rejectNum++;
 		        } 				
 			}
-			else //ÒÑ¾­²»´æÔÚ´íÎóµÄmappingÁË
+			else //ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½
 			{
 				break;
 			}
@@ -258,7 +329,7 @@ public class RepairerGraph implements Flagger
 		System.out.print(" Saving: "+ String.format("%1$.1f", saving)+"%\n");
 		aml.removeIncorrect();		
 		maps=tempMappings;
-		//Ö÷ÒªÊÇÎªÁËË¢ÐÂ½ÇÉ«ËùÒýÆðµÄ¶àÓàmappings¼¯ºÏ
+		//ï¿½ï¿½Òªï¿½ï¿½Îªï¿½ï¿½Ë¢ï¿½Â½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½
 		aml.getAlignment().getMappingSet().retainAll(tempMappings);
 	}
 
@@ -271,29 +342,29 @@ public class RepairerGraph implements Flagger
 		while(true)
 		{
 			System.out.println("The iteration is "+(iteration++));		
-			int mappingIndex = getCandidateMappingByStructure(); //Christian¡¯ ToolµÄÔ­Ê¼µÄÓÅ»¯·½°¸
+			int mappingIndex = getCandidateMappingByStructure(); //Christianï¿½ï¿½ Toolï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½
 			if(mappingIndex != -1)
 			{			
 				Scanner sc = new Scanner(System.in);  
-				System.out.println("µ±Ç°mappingÎª£º\n"+maps.get(mappingIndex).toString());
-				//´òÓ¡mappingµÄcontextÐÅÏ¢
+				System.out.println("ï¿½ï¿½Ç°mappingÎªï¿½ï¿½\n"+maps.get(mappingIndex).toString());
+				//ï¿½ï¿½Ó¡mappingï¿½ï¿½contextï¿½ï¿½Ï¢
 				printDetailInformation(maps.get(mappingIndex));
-		        System.out.println("ÊäÈëÄúµÄÅÐ¶Ï(Y/N):");  
+		        System.out.println("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½(Y/N):");  
 		        if(sc.nextLine().equalsIgnoreCase("Y"))
 		        { 	   		        	
-		            System.out.println("Ö´ÐÐ×¨¼ÒÈÏÍ¬µÄ²Ù×÷");  
+		            System.out.println("Ö´ï¿½ï¿½×¨ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Ä²ï¿½ï¿½ï¿½");  
 		            rMap.strongApproveComplete(mappingIndex,wantMappings,unwantMappings);	
 		            approveNum++;
 		        }
-		        else //ºóÃæÔÙÀ©Õ¹³ÉunknownµÄÇé¿ö
+		        else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½unknownï¿½ï¿½ï¿½ï¿½ï¿½
 		        {  
-		        	System.out.println("Ö´ÐÐ×¨¼Ò¾Ü¾ø²Ù×÷"); 
+		        	System.out.println("Ö´ï¿½ï¿½×¨ï¿½Ò¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½"); 
 		        	System.out.println("The mapping needs to be removed.");
 					rMap.strongRejectComplete(mappingIndex,wantMappings,unwantMappings);			
 					rejectNum++;
 		        } 				
 			}
-			else //ÒÑ¾­²»´æÔÚ´íÎóµÄmappingÁË
+			else //ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½
 			{
 				break;
 			}
@@ -350,7 +421,7 @@ public class RepairerGraph implements Flagger
 		System.out.print(" Saving: "+ String.format("%1$.1f", saving)+"%\n");
 		aml.removeIncorrect();		
 		maps=tempMappings;
-		//Ö÷ÒªÊÇÎªÁËË¢ÐÂ½ÇÉ«ËùÒýÆðµÄ¶àÓàmappings¼¯ºÏ
+		//ï¿½ï¿½Òªï¿½ï¿½Îªï¿½ï¿½Ë¢ï¿½Â½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½
 		aml.getAlignment().getMappingSet().retainAll(tempMappings);
 	}
 	
@@ -364,14 +435,14 @@ public class RepairerGraph implements Flagger
 		{
 			System.out.println("--------------------------------------------------------------------------------");
 			System.out.println("The iteration is "+(iteration++));
-			//int mappingIndex = getCandidateMapping2(); //½«È¨ÖØ×î´óµÄ³éÈ¡³öÀ´	
-			//int mappingIndex = randomSelect(); //ÔÚÎ´±ê¼ÇµÄÊý¾ÝÖÐËæ»ú³éÈ¡	
-			int mappingIndex = getCandidateMappingByImpactor(); //»ùÓÚimpactor factorµÄ¶¨ÒåÀ´½øÐÐ³éÈ¡
+			//int mappingIndex = getCandidateMapping2(); //ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½ï¿½Ä³ï¿½È¡ï¿½ï¿½ï¿½ï¿½	
+			//int mappingIndex = randomSelect(); //ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡	
+			int mappingIndex = getCandidateMappingByImpactor(); //ï¿½ï¿½ï¿½ï¿½impactor factorï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð³ï¿½È¡
 			if(mappingIndex != -1)
 			{			
 				Scanner sc = new Scanner(System.in);  
-				System.out.println("The current mapping is£º\n"+maps.get(mappingIndex).toString());
-				//´òÓ¡mappingµÄcontextÐÅÏ¢
+				System.out.println("The current mapping is \n"+maps.get(mappingIndex).toString());
+				//ï¿½ï¿½Ó¡mappingï¿½ï¿½contextï¿½ï¿½Ï¢
 				printDetailInformation(maps.get(mappingIndex));
 		        System.out.println("Please enter your judgment(Y/N):");  
 		        if(sc.nextLine().equalsIgnoreCase("Y"))
@@ -380,7 +451,7 @@ public class RepairerGraph implements Flagger
 		            rMap.strongApproveComplete(mappingIndex,wantMappings,unwantMappings);	
 		            approveNum++;
 		        }
-		        else //ºóÃæÔÙÀ©Õ¹³ÉunknownµÄÇé¿ö
+		        else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½unknownï¿½ï¿½ï¿½ï¿½ï¿½
 		        {  
 		        	System.out.println("Execute the action according to the rejected mapping."); 
 		        	System.out.println("The mapping needs to be removed.");
@@ -388,7 +459,7 @@ public class RepairerGraph implements Flagger
 					rejectNum++;
 		        } 				
 			}
-			else //ÒÑ¾­²»´æÔÚ´íÎóµÄmappingÁË
+			else //ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½
 			{
 				break;
 			}
@@ -445,8 +516,708 @@ public class RepairerGraph implements Flagger
 		System.out.print(" Saving: "+ String.format("%1$.1f", saving)+"%\n");
 		aml.removeIncorrect();		
 		maps=tempMappings;
-		//Ö÷ÒªÊÇÎªÁËË¢ÐÂ½ÇÉ«ËùÒýÆðµÄ¶àÓàmappings¼¯ºÏ
+		//ï¿½ï¿½Òªï¿½ï¿½Îªï¿½ï¿½Ë¢ï¿½Â½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½
 		aml.getAlignment().getMappingSet().retainAll(tempMappings);
+	}
+	
+	public void AutoBasedReferenceAlignmentOne2OneRevised()
+	{
+		System.out.println("Repairing Alignment");
+		approveNum=0;
+		rejectNum=0;
+		iteration=0;		
+		while(true)
+		{
+			System.out.println("The iteration is "+(iteration++));
+			int mappingIndex = randomSelect(); //ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡
+			if(mappingIndex != -1)
+			{			
+				System.out.println("ï¿½ï¿½Ç°mappingÎªï¿½ï¿½\n"+maps.get(mappingIndex).toString());
+				//ï¿½ï¿½Ó¡mappingï¿½ï¿½contextï¿½ï¿½Ï¢
+				int sourceId=maps.get(mappingIndex).getSourceId();
+				int targetId=maps.get(mappingIndex).getTargetId();
+				MappingRelation r=maps.get(mappingIndex).getRelationship();
+				//printDetailInformation(maps.get(mappingIndex));
+				//if(aml.getReferenceAlignment().contains(sourceId, targetId, r))
+		        if(aml.getReferenceAlignment().containsMapping(sourceId, targetId)&&!isUserFailing())
+		        { 	   		        	
+		            System.out.println("Ö´ï¿½ï¿½×¨ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Ä²ï¿½ï¿½ï¿½");  
+		            rMap.one2oneRestriction(mappingIndex,wantMappings,unwantMappings);	
+		            approveNum++;
+		        }
+		        else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½unknownï¿½ï¿½ï¿½ï¿½ï¿½
+		        {  
+		        	System.out.println("Ö´ï¿½ï¿½×¨ï¿½Ò¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½"); 
+		        	System.out.println("The mapping needs to be removed.");
+					rMap.simpleReject(mappingIndex,wantMappings,unwantMappings);	  //ï¿½ï¿½ï¿½ï¿½ï¿½Ë¾ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¹éµ½Christianï¿½ï¿½ Toolï¿½Ä·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
+					rejectNum++;
+		        } 				
+			}
+			else //ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½
+			{
+				break;
+			}
+		}
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The manual mapping revision is finished! ");
+		HashSet<Integer> filterSet=new HashSet<>();
+		int approvedNum=0,rejectedNum=0;
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The approved mappings are listed as followed:");
+		Vector<Mapping> tempMappings=new Vector<Mapping>();
+		for(Mapping m: wantMappings)
+		{	
+			int source=m.getSourceId();
+			int target=m.getTargetId();
+			int index=aml.getAlignment().getIndexBidirectional(source,target);
+			if(!filterSet.contains(index))
+			{
+				System.out.println(m.toString());
+				tempMappings.add(m);
+				approvedNum++;
+			}
+			if(aml.getAlignment().getPropertyMap().containsKey(index))
+				filterSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		}	
+		if(wantMappings.isEmpty())
+			System.out.println("None");
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The rejected mappings are listed as followed:");		
+		for(Mapping m:unwantMappings)
+		{
+			int source=m.getSourceId();
+			int target=m.getTargetId();
+			int index=aml.getAlignment().getIndexBidirectional(source,target);
+			if(!filterSet.contains(index))
+			{
+				//System.out.println(m.toString());
+				tempMappings.add(m);
+				rejectedNum++;
+			}
+			if(aml.getAlignment().getPropertyMap().containsKey(index))
+				filterSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		}
+		if(unwantMappings.isEmpty())
+			System.out.println("None");
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The number of reliable mappings is "+reliableMappings.size());
+//		for(Mapping m: reliableMappings)
+//		{
+//			System.out.println(m);
+//		}
+		System.out.println("The number of original mappings is "+ (approvedNum+rejectedNum));
+		System.out.println("The number of repaired mappings is "+ approveNum);
+		System.out.println("Your make "+ (approveNum+rejectNum) +" decisions."+" Approve: "+approveNum +" Reject: "+ rejectNum);		
+		double saving=1-(approveNum+rejectNum)*1.0/(approvedNum+rejectedNum);
+		BigDecimal b1 = new BigDecimal(saving);  
+		saving = b1.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue()*100;	
+		System.out.print("The number of saved mapping is : "+ ((approvedNum+rejectedNum)-(approveNum+rejectNum)));
+		System.out.print(" 		Saving: "+ String.format("%1$.1f", saving)+"%\n");
+		aml.removeIncorrect();		
+		maps=tempMappings;
+		//ï¿½ï¿½Òªï¿½ï¿½Îªï¿½ï¿½Ë¢ï¿½Â½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½
+		aml.getAlignment().getMappingSet().retainAll(tempMappings);
+		aml.getAlignment().getMappingSet().addAll(reliableMappings);
+	}
+	
+	public void AutoBasedReferenceAlignmentChristianTool()
+	{
+		System.out.println("Repairing Alignment");
+		approveNum=0;
+		rejectNum=0;
+		iteration=0;	
+		while(true)
+		{
+			System.out.println("The iteration is "+(iteration++));
+			int mappingIndex = getCandidateMappingByStructure(); //Christianï¿½ï¿½ Toolï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½
+			//int mappingIndex = getCandidateMappingByImpactor(); //Christianï¿½ï¿½ Toolï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½
+			if(mappingIndex != -1)
+			{			
+				
+				System.out.println("The current mapping is\n"+maps.get(mappingIndex).toString());
+				//ï¿½ï¿½Ó¡mappingï¿½ï¿½contextï¿½ï¿½Ï¢
+				int sourceId=maps.get(mappingIndex).getSourceId();
+				int targetId=maps.get(mappingIndex).getTargetId();
+				MappingRelation r=maps.get(mappingIndex).getRelationship();
+				//printDetailInformation(maps.get(mappingIndex));
+		        //if(aml.getReferenceAlignment().contains(sourceId, targetId, r))
+		        if(aml.getReferenceAlignment().containsMapping(sourceId, targetId)&&!isUserFailing())	
+		        { 	   		        	
+		            //System.out.println("Ö´ï¿½ï¿½×¨ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Ä²ï¿½ï¿½ï¿½");  
+		            rMap.entailBasedApprove(mappingIndex,wantMappings,unwantMappings); //Christianï¿½ï¿½ Toolï¿½ï¿½Ö§ï¿½Ö·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾
+		            approveNum++;
+		        }
+		        else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½unknownï¿½ï¿½ï¿½ï¿½ï¿½
+		        {  
+		        	//System.out.println("Ö´ï¿½ï¿½×¨ï¿½Ò¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½"); 
+		        	System.out.println("The mapping needs to be removed.");
+					rMap.simpleReject(mappingIndex,wantMappings,unwantMappings); //ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
+					rejectNum++;
+		        } 				
+			}
+			else //ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½
+			{
+				break;
+			}
+		}
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The manual mapping revision is finished! ");
+		HashSet<Integer> filterSet=new HashSet<>();
+		int approvedNum=0,rejectedNum=0;
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The approved mappings are listed as followed:");
+		Vector<Mapping> tempMappings=new Vector<Mapping>();
+		for(Mapping m: wantMappings)
+		{	
+			int source=m.getSourceId();
+			int target=m.getTargetId();
+			int index=aml.getAlignment().getIndexBidirectional(source,target);
+			if(!filterSet.contains(index))
+			{
+				System.out.println(m.toString());
+				tempMappings.add(m);
+				approvedNum++;
+			}
+			if(aml.getAlignment().getPropertyMap().containsKey(index))
+				filterSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		}	
+		if(wantMappings.isEmpty())
+			System.out.println("None");
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The rejected mappings are listed as followed:");		
+		for(Mapping m:unwantMappings)
+		{
+			int source=m.getSourceId();
+			int target=m.getTargetId();
+			int index=aml.getAlignment().getIndexBidirectional(source,target);
+			if(!filterSet.contains(index))
+			{
+				//System.out.println(m.toString());
+				tempMappings.add(m);
+				rejectedNum++;
+			}
+			if(aml.getAlignment().getPropertyMap().containsKey(index))
+				filterSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		}
+		if(unwantMappings.isEmpty())
+			System.out.println("None");
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The number of reliable mappings is "+reliableMappings.size());
+//		for(Mapping m: reliableMappings)
+//		{
+//			System.out.println(m);
+//		}
+		System.out.println("The number of original mappings is "+ (approvedNum+rejectedNum));
+		System.out.println("The number of repaired mappings is "+ approveNum);
+		System.out.println("Your make "+ (approveNum+rejectNum) +" decisions."+" Approve: "+approveNum +" Reject: "+ rejectNum);		
+		double saving=1-(approveNum+rejectNum)*1.0/(approvedNum+rejectedNum);
+		BigDecimal b1 = new BigDecimal(saving);  
+		saving = b1.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue()*100;	
+		System.out.print("The number of saved mapping is : "+ ((approvedNum+rejectedNum)-(approveNum+rejectNum)));
+		System.out.print(" 		Saving: "+ String.format("%1$.1f", saving)+"%\n");
+		aml.removeIncorrect();		
+		maps=tempMappings;
+		//ï¿½ï¿½Òªï¿½ï¿½Îªï¿½ï¿½Ë¢ï¿½Â½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½
+		aml.getAlignment().getMappingSet().retainAll(tempMappings);
+		aml.getAlignment().getMappingSet().addAll(reliableMappings);
+	}
+
+	public void AutoBasedReferenceAlignmentAutoGraphRepair1()
+	{
+		System.out.println("Repairing Alignment");		
+		approveNum=0;
+		rejectNum=0;
+		iteration=0;		
+		while(true)
+		{
+			System.out.println("The iteration is "+(iteration++));		
+			int mappingIndex = getCandidateMappingByStructure(); //Christianï¿½ï¿½ Toolï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½
+			if(mappingIndex != -1)
+			{			
+				
+				System.out.println("ï¿½ï¿½Ç°mappingÎªï¿½ï¿½\n"+maps.get(mappingIndex).toString());
+				//ï¿½ï¿½Ó¡mappingï¿½ï¿½contextï¿½ï¿½Ï¢
+				int sourceId=maps.get(mappingIndex).getSourceId();
+				int targetId=maps.get(mappingIndex).getTargetId();
+				MappingRelation r=maps.get(mappingIndex).getRelationship();
+				//printDetailInformation(maps.get(mappingIndex));
+				//if(aml.getReferenceAlignment().contains(sourceId, targetId, r))
+				if(aml.getReferenceAlignment().containsMapping(sourceId, targetId)&&!isUserFailing())
+		        { 	   		        	
+		            System.out.println("Ö´ï¿½ï¿½×¨ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Ä²ï¿½ï¿½ï¿½");  
+		            rMap.strongApproveComplete(mappingIndex,wantMappings,unwantMappings);	
+		            //rMap.entailBasedApprove(mappingIndex,wantMappings,unwantMappings); //Christianï¿½ï¿½ Toolï¿½ï¿½Ö§ï¿½Ö·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾
+		            approveNum++;
+		        }
+		        else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½unknownï¿½ï¿½ï¿½ï¿½ï¿½
+		        {  
+		        	System.out.println("Ö´ï¿½ï¿½×¨ï¿½Ò¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½"); 
+		        	System.out.println("The mapping needs to be removed.");
+					//rMap.strongRejectComplete(mappingIndex,wantMappings,unwantMappings);
+					rMap.strongRejectComplete2(mappingIndex,wantMappings,unwantMappings,reliableMappings); //ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
+					rejectNum++;
+		        } 				
+			}
+			else //ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½
+			{
+				break;
+			}
+			//
+		}
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The manual mapping revision is finished! ");
+		HashSet<Integer> filterSet=new HashSet<>();
+		int approvedNum=0,rejectedNum=0;
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The approved mappings are listed as followed:");
+		Vector<Mapping> tempMappings=new Vector<Mapping>();
+		for(Mapping m: wantMappings)
+		{	
+			int source=m.getSourceId();
+			int target=m.getTargetId();
+			int index=aml.getAlignment().getIndexBidirectional(source,target);
+			if(!filterSet.contains(index))
+			{
+				System.out.println(m.toString());
+				tempMappings.add(m);
+				approvedNum++;
+			}
+			if(aml.getAlignment().getPropertyMap().containsKey(index))
+				filterSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		}	
+		if(wantMappings.isEmpty())
+			System.out.println("None");
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The rejected mappings are listed as followed:");		
+		for(Mapping m:unwantMappings)
+		{
+			int source=m.getSourceId();
+			int target=m.getTargetId();
+			int index=aml.getAlignment().getIndexBidirectional(source,target);
+			if(!filterSet.contains(index))
+			{
+				//System.out.println(m.toString());
+				tempMappings.add(m);
+				rejectedNum++;
+			}
+			if(aml.getAlignment().getPropertyMap().containsKey(index))
+				filterSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		}
+		if(unwantMappings.isEmpty())
+			System.out.println("None");
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The number of reliable mappings is "+reliableMappings.size());
+//		for(Mapping m: reliableMappings)
+//		{
+//			System.out.println(m);
+//		}
+		System.out.println("The number of original mappings is "+ (approvedNum+rejectedNum));
+		System.out.println("The number of repaired mappings is "+ approveNum);
+		System.out.println("Your make "+ (approveNum+rejectNum) +" decisions."+" Approve: "+approveNum +" Reject: "+ rejectNum);		
+		double saving=1-(approveNum+rejectNum)*1.0/(approvedNum+rejectedNum);
+		BigDecimal b1 = new BigDecimal(saving);  
+		saving = b1.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue()*100;	
+		System.out.print("The number of saved mapping is : "+ ((approvedNum+rejectedNum)-(approveNum+rejectNum)));
+		System.out.print(" 		Saving: "+ String.format("%1$.1f", saving)+"%\n");
+		aml.removeIncorrect();		
+		maps=tempMappings;
+		//ï¿½ï¿½Òªï¿½ï¿½Îªï¿½ï¿½Ë¢ï¿½Â½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½
+		aml.getAlignment().getMappingSet().retainAll(tempMappings);
+		aml.getAlignment().getMappingSet().addAll(reliableMappings);
+	}
+	
+	public void AutoBasedReferenceAlignmentAutoGraphRepair2()
+	{
+		System.out.println("Repairing Alignment");		
+		approveNum=0;
+		rejectNum=0;
+		iteration=0;		
+		while(true)
+		{
+			System.out.println("--------------------------------------------------------------------------------");
+			System.out.println("The iteration is "+(iteration++));
+			//int mappingIndex = getCandidateMapping2(); //ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½ï¿½Ä³ï¿½È¡ï¿½ï¿½ï¿½ï¿½	
+			//int mappingIndex = randomSelect(); //ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡	
+			int mappingIndex = getCandidateMappingByImpactor(); //ï¿½ï¿½ï¿½ï¿½impactor factorï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð³ï¿½È¡
+			if(mappingIndex != -1)
+			{			
+				  
+				System.out.println("The current mapping is \n"+maps.get(mappingIndex).toString());
+				//ï¿½ï¿½Ó¡mappingï¿½ï¿½contextï¿½ï¿½Ï¢
+				int sourceId=maps.get(mappingIndex).getSourceId();
+				int targetId=maps.get(mappingIndex).getTargetId();
+				MappingRelation r=maps.get(mappingIndex).getRelationship();
+				//printDetailInformation(maps.get(mappingIndex));
+		        //if(aml.getReferenceAlignment().contains(sourceId, targetId, r))
+				if(aml.getReferenceAlignment().containsMapping(sourceId, targetId))
+		        { 
+					if(!isUserFailing())
+		        	{
+						System.out.println("Execute the action according to the approved mapping.");  
+						rMap.strongApproveComplete(mappingIndex,wantMappings,unwantMappings);	
+						approveNum++;
+		        	}
+					else
+					{
+						System.out.println("Execute the action according to the rejected mapping."); 
+			        	//System.out.println("The mapping needs to be removed.");
+						//rMap.strongRejectComplete(mappingIndex,wantMappings,unwantMappings);
+						rMap.strongRejectComplete2(mappingIndex,wantMappings,unwantMappings,reliableMappings);
+						rejectNum++;
+					}
+		        }
+		        else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½unknownï¿½ï¿½ï¿½ï¿½ï¿½
+		        {  
+		        	if(!isUserFailing())
+		        	{
+		        		System.out.println("Execute the action according to the rejected mapping."); 
+		        		//System.out.println("The mapping needs to be removed.");
+		        		//rMap.strongRejectComplete(mappingIndex,wantMappings,unwantMappings);
+		        		rMap.strongRejectComplete2(mappingIndex,wantMappings,unwantMappings,reliableMappings);
+		        		rejectNum++;
+		        	}
+		        	else
+		        	{
+		        		System.out.println("Execute the action according to the approved mapping.");  
+						rMap.strongApproveComplete(mappingIndex,wantMappings,unwantMappings);	
+						approveNum++;
+		        	}
+		        } 
+				
+//		        if(aml.getReferenceAlignment().containsMapping(sourceId, targetId))
+//		        { 	   		        			        	
+//		            System.out.println("Execute the action according to the approved mapping.");  
+//		            rMap.strongApproveComplete(mappingIndex,wantMappings,unwantMappings);	
+//		            approveNum++;
+//		        }
+//		        else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½unknownï¿½ï¿½ï¿½ï¿½ï¿½
+//		        {  
+//		        	System.out.println("Execute the action according to the rejected mapping."); 
+//		        	System.out.println("The mapping needs to be removed.");
+//					//rMap.strongRejectComplete(mappingIndex,wantMappings,unwantMappings);
+//					rMap.strongRejectComplete2(mappingIndex,wantMappings,unwantMappings,reliableMappings);
+//					rejectNum++;
+//		        } 				
+			}
+			else //ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½
+			{
+				break;
+			}
+			//
+		}
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The manual mapping revision is finished! ");
+		HashSet<Integer> filterSet=new HashSet<>();
+		int approvedNum=0,rejectedNum=0;
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The approved mappings are listed as followed:");
+		Vector<Mapping> tempMappings=new Vector<Mapping>();
+		for(Mapping m: wantMappings)
+		{	
+			int source=m.getSourceId();
+			int target=m.getTargetId();
+			int index=aml.getAlignment().getIndexBidirectional(source,target);
+			if(!filterSet.contains(index))
+			{
+				System.out.println(m.toString());
+				tempMappings.add(m);
+				approvedNum++;
+			}
+			if(aml.getAlignment().getPropertyMap().containsKey(index))
+				filterSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		}	
+		if(wantMappings.isEmpty())
+			System.out.println("None");
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The rejected mappings are listed as followed:");		
+		for(Mapping m:unwantMappings)
+		{
+			int source=m.getSourceId();
+			int target=m.getTargetId();
+			int index=aml.getAlignment().getIndexBidirectional(source,target);
+			if(!filterSet.contains(index))
+			{
+				//System.out.println(m.toString());
+				tempMappings.add(m);
+				rejectedNum++;
+			}
+			if(aml.getAlignment().getPropertyMap().containsKey(index))
+				filterSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		}
+		if(unwantMappings.isEmpty())
+			System.out.println("None");
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The number of reliable mappings is "+reliableMappings.size());
+//		for(Mapping m: reliableMappings)
+//		{
+//			System.out.println(m);
+//		}
+		System.out.println("The number of original mappings is "+ (approvedNum+rejectedNum));
+		System.out.println("The number of repaired mappings is "+ approveNum);
+		System.out.println("Your make "+ (approveNum+rejectNum) +" decisions."+" Approve: "+approveNum +" Reject: "+ rejectNum);		
+		double saving=1-(approveNum+rejectNum)*1.0/(approvedNum+rejectedNum);
+		BigDecimal b1 = new BigDecimal(saving);  
+		saving = b1.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue()*100;	
+		System.out.print("The number of saved mapping is : "+ ((approvedNum+rejectedNum)-(approveNum+rejectNum)));
+		System.out.print(" 		Saving: "+ String.format("%1$.1f", saving)+"%\n");
+		aml.removeIncorrect();		
+		maps=tempMappings;
+		//ï¿½ï¿½Òªï¿½ï¿½Îªï¿½ï¿½Ë¢ï¿½Â½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½
+		aml.getAlignment().getMappingSet().retainAll(tempMappings);
+		aml.getAlignment().getMappingSet().addAll(reliableMappings);
+	}
+	
+	public void AutoBasedReferenceAlignmentSimpleAutoGraphRepair()
+	{
+		System.out.println("Repairing Alignment");
+		approveNum=0;
+		rejectNum=0;
+		iteration=0;	
+		
+		
+		while(true)
+		{
+			System.out.println("The iteration is "+(iteration++));
+			//int mappingIndex = getCandidateMappingByStructure(); //Christianï¿½ï¿½ Toolï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½
+			int mappingIndex = getCandidateMappingByImpactor(); //Christianï¿½ï¿½ Toolï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½
+			if(mappingIndex != -1)
+			{			
+				
+				System.out.println("The current mapping is\n"+maps.get(mappingIndex).toString());
+				//ï¿½ï¿½Ó¡mappingï¿½ï¿½contextï¿½ï¿½Ï¢
+				int sourceId=maps.get(mappingIndex).getSourceId();
+				int targetId=maps.get(mappingIndex).getTargetId();
+				MappingRelation r=maps.get(mappingIndex).getRelationship();
+				//printDetailInformation(maps.get(mappingIndex));
+		        //if(aml.getReferenceAlignment().contains(sourceId, targetId, r))
+		        if(aml.getReferenceAlignment().containsMapping(sourceId, targetId))	
+		        { 	   		        	
+		            //System.out.println("Ö´ï¿½ï¿½×¨ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Ä²ï¿½ï¿½ï¿½");  
+		        	if(!isUserFailing())
+		        	{
+		        		rMap.entailBasedApprove(mappingIndex,wantMappings,unwantMappings); //Christianï¿½ï¿½ Toolï¿½ï¿½Ö§ï¿½Ö·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾
+		        		approveNum++;
+		        	}
+		        	else
+		        	{
+		        		System.out.println("The mapping needs to be removed.");
+						//rMap.simpleReject(mappingIndex,wantMappings,unwantMappings); //ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
+						rMap.strongRejectComplete2(mappingIndex,wantMappings,unwantMappings,reliableMappings); //ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
+						rejectNum++;
+		        	}
+		        }
+		        else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½unknownï¿½ï¿½ï¿½ï¿½ï¿½
+		        {  
+		        	if(!isUserFailing())
+		        	{
+		        		System.out.println("The mapping needs to be removed.");
+						//rMap.simpleReject(mappingIndex,wantMappings,unwantMappings); //ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
+						rMap.strongRejectComplete2(mappingIndex,wantMappings,unwantMappings,reliableMappings); //ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
+						rejectNum++;
+		        		
+		        	}
+		        	else
+		        	{
+		        		rMap.entailBasedApprove(mappingIndex,wantMappings,unwantMappings); //Christianï¿½ï¿½ Toolï¿½ï¿½Ö§ï¿½Ö·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾
+		        		approveNum++;
+		        	}
+		        } 
+		        
+		       /* if(aml.getReferenceAlignment().containsMapping(sourceId, targetId))	
+		        { 	   		        	
+		        	System.out.println("The mapping needs to be approved.");
+		        	rMap.entailBasedApprove(mappingIndex,wantMappings,unwantMappings); //Christianï¿½ï¿½ Toolï¿½ï¿½Ö§ï¿½Ö·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾
+		        	approveNum++;
+		        }
+		        else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½unknownï¿½ï¿½ï¿½ï¿½ï¿½
+		        {  
+		        	System.out.println("The mapping needs to be removed.");
+					rMap.simpleReject(mappingIndex,wantMappings,unwantMappings); //ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
+					rejectNum++;
+		        } */
+			}
+			else //ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½
+			{
+				break;
+			}
+		}
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The manual mapping revision is finished! ");
+		HashSet<Integer> filterSet=new HashSet<>();
+		int approvedNum=0,rejectedNum=0;
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The approved mappings are listed as followed:");
+		Vector<Mapping> tempMappings=new Vector<Mapping>();
+		for(Mapping m: wantMappings)
+		{	
+			int source=m.getSourceId();
+			int target=m.getTargetId();
+			int index=aml.getAlignment().getIndexBidirectional(source,target);
+			if(!filterSet.contains(index))
+			{
+				System.out.println(m.toString());
+				tempMappings.add(m);
+				approvedNum++;
+			}
+			if(aml.getAlignment().getPropertyMap().containsKey(index))
+				filterSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		}	
+		if(wantMappings.isEmpty())
+			System.out.println("None");
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The rejected mappings are listed as followed:");		
+		for(Mapping m:unwantMappings)
+		{
+			int source=m.getSourceId();
+			int target=m.getTargetId();
+			int index=aml.getAlignment().getIndexBidirectional(source,target);
+			if(!filterSet.contains(index))
+			{
+				System.out.println(m.toString());
+				tempMappings.add(m);
+				rejectedNum++;
+			}
+			if(aml.getAlignment().getPropertyMap().containsKey(index))
+				filterSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		}
+		if(unwantMappings.isEmpty())
+			System.out.println("None");
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The number of reliable mappings is "+reliableMappings.size());
+//		for(Mapping m: reliableMappings)
+//		{
+//			System.out.println(m);
+//		}
+		System.out.println("The number of original mappings is "+ (approvedNum+rejectedNum));
+		System.out.println("The number of repaired mappings is "+ approveNum);
+		System.out.println("Your make "+ (approveNum+rejectNum) +" decisions."+" Approve: "+approveNum +" Reject: "+ rejectNum);		
+		double saving=1-(approveNum+rejectNum)*1.0/(approvedNum+rejectedNum);
+		BigDecimal b1 = new BigDecimal(saving);  
+		saving = b1.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue()*100;	
+		System.out.print("The number of saved mapping is : "+ ((approvedNum+rejectedNum)-(approveNum+rejectNum)));
+		System.out.print(" 		Saving: "+ String.format("%1$.1f", saving)+"%\n");
+		aml.removeIncorrect();		
+		maps=tempMappings;
+		//ï¿½ï¿½Òªï¿½ï¿½Îªï¿½ï¿½Ë¢ï¿½Â½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½
+		aml.getAlignment().getMappingSet().retainAll(tempMappings);
+		aml.getAlignment().getMappingSet().addAll(reliableMappings);
+	}
+	
+	public void RevisedMappings()
+	{
+		/*if(rMap.isCoherent())
+		{
+			System.out.println("Alignment is coherent");
+			return;
+		}*/
+		System.out.println("Repairing Alignment");
+		long time = System.currentTimeMillis()/1000;
+		int revisedCount = 0;
+		int reservedCount = 0;
+		int removedCount = 0;
+		ArrayList<Integer> revisedMappings=new ArrayList<Integer>();
+		ArrayList<Integer> reservedMappings=new ArrayList<Integer>();
+		ArrayList<Integer> removedMappings=new ArrayList<Integer>();
+		//Loop until no more mappings can be removed
+		//buildCheckListrMap.getConflictSets();
+		int iteration=0;
+		while(true)
+		{
+			System.out.println("The iteration is "+(iteration++));
+			//int worstMapping = getIncorrectMapping();
+			int worstMapping = getIncorrectMapping3();
+			if(worstMapping != -1)
+			{
+				ArrayList<Integer> indexSet=new ArrayList<Integer>();
+				if(aml.getAlignment().getPropertyMap().containsKey(worstMapping))
+					indexSet.addAll(aml.getAlignment().getPropertyMap().get(worstMapping));
+				else
+					indexSet.add(worstMapping);
+				indexSet.retainAll(rMap.MapMinimalConflictSet.keySet()); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½Ö¤	
+				worstMapping=indexSet.get(0);	
+				
+				System.out.println("The index of wrong mapping is: "+ worstMapping);
+				System.out.println(aml.getAlignment().get(worstMapping).toString());
+				if(ExistCommonEntailment4(worstMapping))  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½worstMappingï¿½ï¿½ï¿½Ü¶ï¿½ï¿½ï¿½ï¿½ï¿½
+				{		
+					//Reviseï¿½ï¿½ï¿½ï¿½
+					if(rMap.reviseJudge(worstMapping))
+					{
+						System.out.println("The mapping needs to be revised.");
+						revisedMappings.add(worstMapping);
+						revisedCount++;
+					}
+					else
+					{
+						System.out.println("The mapping needs to be reserved.");
+						reservedMappings.add(worstMapping);
+						reservedCount++;
+					}			
+				}
+				else  //Removeï¿½ï¿½ï¿½ï¿½
+				{	
+					System.out.println("The mapping needs to be removed.");	
+					//rMap.remove(worstMapping,true);
+					rMap.remove2(worstMapping,true);
+					removedMappings.add(worstMapping);
+					removedCount++;
+				}
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½removeï¿½ï¿½ï¿½ï¿½
+				/*rMap.remove(worstMapping,true);	
+				removedMappings.add(worstMapping);
+				removedCount++;*/
+			}
+			else //ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½
+			{
+				break;
+			}
+			//
+		}
+		System.out.println("The removed mappings is listed as followed:");
+		for(int m:removedMappings)
+		{	
+			System.out.println(aml.getAlignment().get(m).toString());
+		}
+		System.out.println("removed " + removedCount + " mappings");
+		System.out.println("The revised mappings is listed as followed:");
+		for(int m:revisedMappings)
+		{	
+			System.out.println(aml.getAlignment().get(m).toString() + " "+aml.getAlignment().get(m).getSourceId()+" "+aml.getAlignment().get(m).getTargetId());
+		}
+		System.out.println("revised " + revisedCount + " mappings");
+		System.out.println("The reserved mappings is listed as followed:");
+		for(int m:reservedMappings)
+		{	
+			System.out.println(aml.getAlignment().get(m).toString() + " "+aml.getAlignment().get(m).getSourceId()+" "+aml.getAlignment().get(m).getTargetId());
+		}
+		System.out.println("reserved " + reservedCount + " mappings");	
+		
+		
+		System.out.println("Finished Repair in " + 
+				(System.currentTimeMillis()/1000-time) + " seconds");
+		
+		HashSet<Integer> filterSet=new HashSet<>();
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("The saved mappings are listed as followed:");
+		Vector<Mapping> tempMappings=new Vector<Mapping>();
+		for(Mapping m: aml.getAlignment())
+		{	
+			int source=m.getSourceId();
+			int target=m.getTargetId();
+			int index=aml.getAlignment().getIndexBidirectional(source,target);
+			if(!filterSet.contains(index))
+			{
+				//System.out.println(m.toString());
+				tempMappings.add(m);
+			}
+			if(aml.getAlignment().getPropertyMap().containsKey(index))
+				filterSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		}	
+		System.out.println("--------------------------------------------------------------------------------");			
+		maps=tempMappings;
+		//ï¿½ï¿½Òªï¿½ï¿½Îªï¿½ï¿½Ë¢ï¿½Â½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½
+		aml.getAlignment().getMappingSet().retainAll(tempMappings);
+		aml.removeIncorrect();
 	}
 	
 	@Override
@@ -460,15 +1231,15 @@ public class RepairerGraph implements Flagger
 		System.out.println("Finished in " +	(System.currentTimeMillis()/1000-time) + " seconds");
 	}
 	
-	private int randomSelect() //¸ù¾ÝMIPSsµÄ¸öÊýÓëmappingµÄÈ¨ÖØ
+	private int randomSelect() //ï¿½ï¿½ï¿½ï¿½MIPSsï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½È¨ï¿½ï¿½
 	{			
 		int candidateMapping = -1;	
 		ArrayList<Integer> randomSet=new ArrayList<Integer>();
-		for(int i=0;i<maps.size();i++)  //ÕâÀïÖ»¶Ô´ýÆÀ¹ÀµÄmappings½øÐÐÅÅÐò
+		for(int i=0;i<maps.size();i++)  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			if(maps.get(i).getStatus().equals(MappingStatus.UNKNOWN))
 			{
-				int originalIndex=restoreRoleMapping(i);  //¿¼ÂÇµ½½ÇÉ«´æÔÚÐèÒª¼ÓÉÏ´Ë¾ä
+				int originalIndex=restoreRoleMapping(i);  //ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ï´Ë¾ï¿½
 				if(!randomSet.contains(originalIndex))
 					randomSet.add(originalIndex);
 			}
@@ -481,11 +1252,11 @@ public class RepairerGraph implements Flagger
 		return candidateMapping;
 	}
 	
-	private int getCandidateMapping() //¸ù¾ÝMIPSsµÄ¸öÊýÓëmappingµÄÈ¨ÖØ
+	private int getCandidateMapping() //ï¿½ï¿½ï¿½ï¿½MIPSsï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½È¨ï¿½ï¿½
 	{			
 		int candidateMapping = -1;
 		HashMap<Integer,Integer> CandidateMappings=new HashMap<Integer,Integer>();		
-		for(int i=0;i<maps.size();i++)  //ÕâÀïÖ»¶Ô´ýÆÀ¹ÀµÄmappings½øÐÐÅÅÐò
+		for(int i=0;i<maps.size();i++)  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			if(maps.get(i).getStatus().equals(MappingStatus.UNKNOWN))
 			{
@@ -498,14 +1269,14 @@ public class RepairerGraph implements Flagger
 				{
 				  card=0;
 				}
-				//¿¼ÂÇµ½ÓÐ½ÇÉ«´æÔÚÐèÒª½øÐÐ»¹Ô­(Èç¹ûÊÇ¸ÅÄîµÄ»°£¬ÄÇ¾ÍÊÇÍ¬Ò»¸öË÷Òý)
+				//ï¿½ï¿½ï¿½Çµï¿½ï¿½Ð½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ð»ï¿½Ô­(ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½Í¬Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 				int originalIndex=restoreRoleMapping(i);
-				if(CandidateMappings.containsKey(originalIndex)) //½ÇÉ«µÄÇé¿ö
+				if(CandidateMappings.containsKey(originalIndex)) //ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					card=card+CandidateMappings.get(originalIndex);
 					CandidateMappings.put(originalIndex, card);	
 				}
-				else //¸ÅÄîµÄÇé¿ö
+				else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					CandidateMappings.put(originalIndex, card);	
 				}
@@ -514,16 +1285,16 @@ public class RepairerGraph implements Flagger
 		if(CandidateMappings.isEmpty())
 			return -1;
 		List<Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer,Integer>>(CandidateMappings.entrySet());
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collections.sort(list,new Comparator<Map.Entry<Integer,Integer>>() {
-            //½µÐòÅÅÐò
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public int compare(Entry<Integer, Integer> o1,
                     Entry<Integer, Integer> o2) {
                 return o2.getValue().compareTo(o1.getValue());
             }         
         });
         
-        //ÏÈ¿¼ÂÇMIPSs³öÏÖ´ÎÊý×î¶àµÄmappings   
+        //ï¿½È¿ï¿½ï¿½ï¿½MIPSsï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappings   
         ArrayList<Integer> CardMapping=new ArrayList<Integer>();
 		int maxCard = 0;
 		for(Entry<Integer, Integer> mapping:list)
@@ -554,11 +1325,11 @@ public class RepairerGraph implements Flagger
 		return candidateMapping;	
 	}
 	
-	private int getCandidateMapping2()  //¼òµ¥ÒÀÀµÈ¨ÖØµÄÀ´ÅÅÐò
+	private int getCandidateMapping2()  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¨ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	{			
 		int candidateMapping = -1;
 		HashMap<Integer,Double> CandidateMappings=new HashMap<Integer,Double>();		
-		for(int i=0;i<maps.size();i++)  //ÕâÀïÖ»¶Ô´ýÆÀ¹ÀµÄmappings½øÐÐÅÅÐò
+		for(int i=0;i<maps.size();i++)  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			if(maps.get(i).getStatus().equals(MappingStatus.UNKNOWN))
 			{		
@@ -572,16 +1343,16 @@ public class RepairerGraph implements Flagger
 		if(CandidateMappings.isEmpty())
 			return -1;
 		List<Entry<Integer, Double>> list = new ArrayList<Map.Entry<Integer,Double>>(CandidateMappings.entrySet());
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collections.sort(list,new Comparator<Map.Entry<Integer,Double>>() {
-            //½µÐòÅÅÐò
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public int compare(Entry<Integer, Double> o1,
                     Entry<Integer, Double> o2) {
                 return o2.getValue().compareTo(o1.getValue());
             }         
         });
         
-        //ÏÈ¿¼ÂÇMIPSs³öÏÖ´ÎÊý×î¶àµÄmappings   
+        //ï¿½È¿ï¿½ï¿½ï¿½MIPSsï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappings   
         ArrayList<Integer> CardMapping=new ArrayList<Integer>();
 		double maxSim = 0;
 		for(Entry<Integer, Double> mapping:list)
@@ -604,11 +1375,11 @@ public class RepairerGraph implements Flagger
 		return candidateMapping;	
 	}
 	
-	private int getCandidateMappingByStructure()  //ÒÀ¿¿Ô­±¾ÌåµÄ½á¹¹À´½øÐÐÅÅÐò  Christian¡¯ ToolµÄÔ­Ê¼µÄÓÅ»¯·½°¸
+	private int getCandidateMappingByStructure()  //ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½Ä½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  Christianï¿½ï¿½ Toolï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½
 	{	
 		int candidateMapping = -1;
 		HashMap<Integer,Integer> CandidateMappings=new HashMap<Integer,Integer>();	
-		for(int i=0;i<maps.size();i++)  //ÕâÀïÖ»¶Ô´ýÆÀ¹ÀµÄmappings½øÐÐÅÅÐò
+		for(int i=0;i<maps.size();i++)  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			if(maps.get(i).getStatus().equals(MappingStatus.UNKNOWN))
 			{	
@@ -649,12 +1420,12 @@ public class RepairerGraph implements Flagger
 					impactor=impactor1+impactor2;					
 				}       
                 int originalIndex=restoreRoleMapping(i);
-				if(CandidateMappings.containsKey(originalIndex)) //½ÇÉ«µÄÇé¿ö
+				if(CandidateMappings.containsKey(originalIndex)) //ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				{							
-					impactor=CandidateMappings.get(originalIndex); //(impactor-1ÊÇÎªÁË·ÀÖ¹²»Í¬ÄäÃû½ÇÉ«µÄÀÛ¼Ó)
+					impactor=CandidateMappings.get(originalIndex); //(impactor-1ï¿½ï¿½Îªï¿½Ë·ï¿½Ö¹ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½Û¼ï¿½)
 					CandidateMappings.put(originalIndex, impactor);			
 				}
-				else //¸ÅÄîµÄÇé¿ö
+				else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					CandidateMappings.put(originalIndex, impactor);	
 				}		
@@ -664,9 +1435,9 @@ public class RepairerGraph implements Flagger
 		if(CandidateMappings.isEmpty())
 			return -1;
 		List<Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer,Integer>>(CandidateMappings.entrySet());
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collections.sort(list,new Comparator<Map.Entry<Integer,Integer>>() {
-            //½µÐòÅÅÐò
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public int compare(Entry<Integer, Integer> o1,
                     Entry<Integer, Integer> o2) {
                 return o2.getValue().compareTo(o1.getValue());
@@ -694,11 +1465,11 @@ public class RepairerGraph implements Flagger
 		return candidateMapping;	
 	}
 	
-	private int getCandidateMappingByStructure(ArrayList<Integer> candidateSet)  //ÒÀ¿¿Ô­±¾ÌåµÄ½á¹¹À´½øÐÐÅÅÐò  Christian¡¯ ToolµÄÔ­Ê¼µÄÓÅ»¯·½°¸
+	private int getCandidateMappingByStructure(ArrayList<Integer> candidateSet)  //ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½Ä½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  Christianï¿½ï¿½ Toolï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½
 	{	
 		int candidateMapping = -1;
 		HashMap<Integer,Integer> CandidateMappings=new HashMap<Integer,Integer>();	
-		for(int i=0;i<candidateSet.size();i++)  //ÕâÀïÖ»¶Ô´ýÆÀ¹ÀµÄmappings½øÐÐÅÅÐò
+		for(int i=0;i<candidateSet.size();i++)  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			if(maps.get(candidateSet.get(i)).getStatus().equals(MappingStatus.UNKNOWN))
 			{	
@@ -739,12 +1510,12 @@ public class RepairerGraph implements Flagger
 					impactor=impactor1+impactor2;					
 				}       
                 int originalIndex=restoreRoleMapping(candidateSet.get(i));
-				if(CandidateMappings.containsKey(originalIndex)) //½ÇÉ«µÄÇé¿ö
+				if(CandidateMappings.containsKey(originalIndex)) //ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				{							
-					impactor=CandidateMappings.get(originalIndex); //(impactor-1ÊÇÎªÁË·ÀÖ¹²»Í¬ÄäÃû½ÇÉ«µÄÀÛ¼Ó)
+					impactor=CandidateMappings.get(originalIndex); //(impactor-1ï¿½ï¿½Îªï¿½Ë·ï¿½Ö¹ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½Û¼ï¿½)
 					CandidateMappings.put(originalIndex, impactor);			
 				}
-				else //¸ÅÄîµÄÇé¿ö
+				else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					CandidateMappings.put(originalIndex, impactor);	
 				}		
@@ -754,9 +1525,9 @@ public class RepairerGraph implements Flagger
 		if(CandidateMappings.isEmpty())
 			return -1;
 		List<Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer,Integer>>(CandidateMappings.entrySet());
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collections.sort(list,new Comparator<Map.Entry<Integer,Integer>>() {
-            //½µÐòÅÅÐò
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public int compare(Entry<Integer, Integer> o1,
                     Entry<Integer, Integer> o2) {
                 return o2.getValue().compareTo(o1.getValue());
@@ -784,41 +1555,41 @@ public class RepairerGraph implements Flagger
 		return candidateMapping;	
 	}
 	
-	private int getCandidateMappingByImpactor()  //¼òµ¥ÒÀÀµÈ¨ÖØµÄÀ´ÅÅÐò
+	private int getCandidateMappingByImpactor()  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¨ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	{			
 		int candidateMapping = -1;
 		HashMap<Integer,Integer> CandidateMappings=new HashMap<Integer,Integer>();	
 		HashMap<Integer,Boolean> mappingJudge=new HashMap<Integer,Boolean>();
 		//int maxImpactor=0;
-		for(int i=0;i<maps.size();i++)  //ÕâÀïÖ»¶Ô´ýÆÀ¹ÀµÄmappings½øÐÐÅÅÐò
+		for(int i=0;i<maps.size();i++)  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
-			Boolean flag=true; //true±íÊ¾ÔÞÍ¬£¬false±íÊ¾¾Ü¾ø
+			Boolean flag=true; //trueï¿½ï¿½Ê¾ï¿½ï¿½Í¬ï¿½ï¿½falseï¿½ï¿½Ê¾ï¿½Ü¾ï¿½
 			if(maps.get(i).getStatus().equals(MappingStatus.UNKNOWN))
 			{		
 				//System.out.println(i);
 				//System.out.println(maps.get(i).toString());
-				int impactPlus=obtainImpactPlus(i); //»ñÈ¡ÕýÃæÓ°ÏìµÄÖµ
-				//int impactConflict=obtainImpactConflict(i); //»ñÈ¡³åÍ»Ó°ÏìµÄÖµ
-				int impactConflict=obtainImpactConflict2(i); //»ñÈ¡³åÍ»Ó°ÏìµÄÖµ
-				int impactMinor=obtainImpactMinor(i);   //»ñÈ¡·´ÃæÓ°ÏìµÄÖµ 
+				int impactPlus=obtainImpactPlus(i); //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½Öµ
+				//int impactConflict=obtainImpactConflict(i); //ï¿½ï¿½È¡ï¿½ï¿½Í»Ó°ï¿½ï¿½ï¿½Öµ
+				int impactConflict=obtainImpactConflict2(i); //ï¿½ï¿½È¡ï¿½ï¿½Í»Ó°ï¿½ï¿½ï¿½Öµ
+				int impactMinor=obtainImpactMinor(i);   //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½Öµ 
                 int impactor=Math.max(impactPlus+impactConflict, impactMinor);
-                if((impactPlus+impactConflict)<impactMinor) //Ä¬ÈÏÊÇ¾Ü¾øµÄÇé¿ö
+                if((impactPlus+impactConflict)<impactMinor) //Ä¬ï¿½ï¿½ï¿½Ç¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 	flag=false;         
                 int originalIndex=restoreRoleMapping(i);
-				if(CandidateMappings.containsKey(originalIndex)) //½ÇÉ«µÄÇé¿ö
+				if(CandidateMappings.containsKey(originalIndex)) //ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					
 					boolean tempflag=mappingJudge.get(originalIndex);
-					if(tempflag==flag) //Ä¿±êÒ»ÖÂ,¼´¾ùÎªÔÞÍ¬»òÕß¾Ü¾ø
+					if(tempflag==flag) //Ä¿ï¿½ï¿½Ò»ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Í¬ï¿½ï¿½ï¿½ß¾Ü¾ï¿½
 					{					
-						impactor=(impactor-1)+CandidateMappings.get(originalIndex); //(impactor-1ÊÇÎªÁË·ÀÖ¹²»Í¬ÄäÃû½ÇÉ«µÄÀÛ¼Ó)
+						impactor=(impactor-1)+CandidateMappings.get(originalIndex); //(impactor-1ï¿½ï¿½Îªï¿½Ë·ï¿½Ö¹ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½Û¼ï¿½)
 						CandidateMappings.put(originalIndex, impactor);
 						mappingJudge.put(originalIndex, flag);
 					}
 					else 
 					{
 						int tempImpactor=CandidateMappings.get(originalIndex);
-						if(tempImpactor<=impactor) //Ô­Ê¼µÄÇé¿ö±Èµ±Ç°Çé¿öÓ°ÏìÒò×Ó¸ü´ó,±£ÁôÔ­Ê¼µÄ·½°¸
+						if(tempImpactor<=impactor) //Ô­Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Èµï¿½Ç°ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½ï¿½Ó¸ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Ô­Ê¼ï¿½Ä·ï¿½ï¿½ï¿½
 						{
 							CandidateMappings.put(originalIndex, impactor);
 							mappingJudge.put(originalIndex, flag);
@@ -826,7 +1597,7 @@ public class RepairerGraph implements Flagger
 						}
 					}			
 				}
-				else //¸ÅÄîµÄÇé¿ö
+				else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					CandidateMappings.put(originalIndex, impactor);	
 					mappingJudge.put(originalIndex, flag);
@@ -838,9 +1609,9 @@ public class RepairerGraph implements Flagger
 		if(CandidateMappings.isEmpty())
 			return -1;
 		List<Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer,Integer>>(CandidateMappings.entrySet());
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collections.sort(list,new Comparator<Map.Entry<Integer,Integer>>() {
-            //½µÐòÅÅÐò
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public int compare(Entry<Integer, Integer> o1,
                     Entry<Integer, Integer> o2) {
                 return o2.getValue().compareTo(o1.getValue());
@@ -871,49 +1642,49 @@ public class RepairerGraph implements Flagger
 		}
 		else
 		{
-			Boolean judge=mappingJudge.get(CardMapping.get(0)); //»òÕßÔÞÍ¬»¹ÊÇ¾Ü¾øµÄÇ÷ÊÆ
+			Boolean judge=mappingJudge.get(CardMapping.get(0)); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Ç¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			ArrayList<Integer> WeightsMapping=new ArrayList<Integer>();
-			WeightsMapping=selectCandidateMappingByWeight(CardMapping,judge); //¸ù¾Ý¾Ü¾ø»¹ÊÇÔÞÍ¬»¹¾õµÃÅÅÐòµÄ·½Ê½,ÔÞÍ¬ÔòÊÇ½µÐò£¬¾Ü¾øÔòÊÇÉýÐò		
+			WeightsMapping=selectCandidateMappingByWeight(CardMapping,judge); //ï¿½ï¿½ï¿½Ý¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½Ê½,ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Ç½ï¿½ï¿½ò£¬¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		
 			candidateMapping=WeightsMapping.get(0);		
 		}		
 		return candidateMapping;	
 	}
 	
-	private int getCandidateMappingByImpactor(ArrayList<Integer> candidates)  //¼òµ¥ÒÀÀµÈ¨ÖØµÄÀ´ÅÅÐò
+	private int getCandidateMappingByImpactor(ArrayList<Integer> candidates)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¨ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	{			
 		int candidateMapping = -1;
 		HashMap<Integer,Integer> CandidateMappings=new HashMap<Integer,Integer>();	
 		HashMap<Integer,Boolean> mappingJudge=new HashMap<Integer,Boolean>();
 		//int maxImpactor=0;
-		for(int i=0;i<candidates.size();i++)  //ÕâÀïÖ»¶Ô´ýÆÀ¹ÀµÄmappings½øÐÐÅÅÐò
+		for(int i=0;i<candidates.size();i++)  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			int index=candidates.get(i);
-			Boolean flag=true; //true±íÊ¾ÔÞÍ¬£¬false±íÊ¾¾Ü¾ø
+			Boolean flag=true; //trueï¿½ï¿½Ê¾ï¿½ï¿½Í¬ï¿½ï¿½falseï¿½ï¿½Ê¾ï¿½Ü¾ï¿½
 			if(maps.get(index).getStatus().equals(MappingStatus.UNKNOWN))
 			{		
 				
-				int impactPlus=obtainImpactPlus(index); //»ñÈ¡ÕýÃæÓ°ÏìµÄÖµ
-				//int impactConflict=obtainImpactConflict(i); //»ñÈ¡³åÍ»Ó°ÏìµÄÖµ
-				int impactConflict=obtainImpactConflict2(index); //»ñÈ¡³åÍ»Ó°ÏìµÄÖµ
-				int impactMinor=obtainImpactMinor(index);   //»ñÈ¡·´ÃæÓ°ÏìµÄÖµ 
+				int impactPlus=obtainImpactPlus(index); //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½Öµ
+				//int impactConflict=obtainImpactConflict(i); //ï¿½ï¿½È¡ï¿½ï¿½Í»Ó°ï¿½ï¿½ï¿½Öµ
+				int impactConflict=obtainImpactConflict2(index); //ï¿½ï¿½È¡ï¿½ï¿½Í»Ó°ï¿½ï¿½ï¿½Öµ
+				int impactMinor=obtainImpactMinor(index);   //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½Öµ 
                 int impactor=Math.max(impactPlus+impactConflict, impactMinor);
-                if((impactPlus+impactConflict)<impactMinor) //Ä¬ÈÏÊÇ¾Ü¾øµÄÇé¿ö
+                if((impactPlus+impactConflict)<impactMinor) //Ä¬ï¿½ï¿½ï¿½Ç¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 	flag=false;         
                 int originalIndex=restoreRoleMapping(index);
-				if(CandidateMappings.containsKey(originalIndex)) //½ÇÉ«µÄÇé¿ö
+				if(CandidateMappings.containsKey(originalIndex)) //ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					
 					boolean tempflag=mappingJudge.get(originalIndex);
-					if(tempflag==flag) //Ä¿±êÒ»ÖÂ,¼´¾ùÎªÔÞÍ¬»òÕß¾Ü¾ø
+					if(tempflag==flag) //Ä¿ï¿½ï¿½Ò»ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Í¬ï¿½ï¿½ï¿½ß¾Ü¾ï¿½
 					{					
-						impactor=(impactor-1)+CandidateMappings.get(originalIndex); //(impactor-1ÊÇÎªÁË·ÀÖ¹²»Í¬ÄäÃû½ÇÉ«µÄÀÛ¼Ó)
+						impactor=(impactor-1)+CandidateMappings.get(originalIndex); //(impactor-1ï¿½ï¿½Îªï¿½Ë·ï¿½Ö¹ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½Û¼ï¿½)
 						CandidateMappings.put(originalIndex, impactor);
 						mappingJudge.put(originalIndex, flag);
 					}
 					else 
 					{
 						int tempImpactor=CandidateMappings.get(originalIndex);
-						if(tempImpactor<=impactor) //Ô­Ê¼µÄÇé¿ö±Èµ±Ç°Çé¿öÓ°ÏìÒò×Ó¸ü´ó,±£ÁôÔ­Ê¼µÄ·½°¸
+						if(tempImpactor<=impactor) //Ô­Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Èµï¿½Ç°ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½ï¿½Ó¸ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Ô­Ê¼ï¿½Ä·ï¿½ï¿½ï¿½
 						{
 							CandidateMappings.put(originalIndex, impactor);
 							mappingJudge.put(originalIndex, flag);
@@ -921,7 +1692,7 @@ public class RepairerGraph implements Flagger
 						}
 					}			
 				}
-				else //¸ÅÄîµÄÇé¿ö
+				else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					CandidateMappings.put(originalIndex, impactor);	
 					mappingJudge.put(originalIndex, flag);
@@ -933,9 +1704,9 @@ public class RepairerGraph implements Flagger
 		if(CandidateMappings.isEmpty())
 			return -1;
 		List<Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer,Integer>>(CandidateMappings.entrySet());
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collections.sort(list,new Comparator<Map.Entry<Integer,Integer>>() {
-            //½µÐòÅÅÐò
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public int compare(Entry<Integer, Integer> o1,
                     Entry<Integer, Integer> o2) {
                 return o2.getValue().compareTo(o1.getValue());
@@ -966,19 +1737,19 @@ public class RepairerGraph implements Flagger
 		}
 		else
 		{
-			Boolean judge=mappingJudge.get(CardMapping.get(0)); //»òÕßÔÞÍ¬»¹ÊÇ¾Ü¾øµÄÇ÷ÊÆ
+			Boolean judge=mappingJudge.get(CardMapping.get(0)); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Ç¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			ArrayList<Integer> WeightsMapping=new ArrayList<Integer>();
-			WeightsMapping=selectCandidateMappingByWeight(CardMapping,judge); //¸ù¾Ý¾Ü¾ø»¹ÊÇÔÞÍ¬»¹¾õµÃÅÅÐòµÄ·½Ê½,ÔÞÍ¬ÔòÊÇ½µÐò£¬¾Ü¾øÔòÊÇÉýÐò		
+			WeightsMapping=selectCandidateMappingByWeight(CardMapping,judge); //ï¿½ï¿½ï¿½Ý¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½Ê½,ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Ç½ï¿½ï¿½ò£¬¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		
 			candidateMapping=WeightsMapping.get(0);		
 		}		
 		return candidateMapping;	
 	}
 	
-	private int getCandidateMappingByStructureAndImpactor()  //¼òµ¥ÒÀÀµÈ¨ÖØµÄÀ´ÅÅÐò
+	private int getCandidateMappingByStructureAndImpactor()  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¨ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	{			
 		int candidateMapping = -1;
 		HashMap<Integer,Integer> CandidateMappings=new HashMap<Integer,Integer>();	
-		for(int i=0;i<maps.size();i++)  //ÕâÀïÖ»¶Ô´ýÆÀ¹ÀµÄmappings½øÐÐÅÅÐò
+		for(int i=0;i<maps.size();i++)  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			if(maps.get(i).getStatus().equals(MappingStatus.UNKNOWN))
 			{	
@@ -1019,12 +1790,12 @@ public class RepairerGraph implements Flagger
 					impactor=impactor1+impactor2;					
 				}       
                 int originalIndex=restoreRoleMapping(i);
-				if(CandidateMappings.containsKey(originalIndex)) //½ÇÉ«µÄÇé¿ö
+				if(CandidateMappings.containsKey(originalIndex)) //ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				{							
-					impactor=CandidateMappings.get(originalIndex); //(impactor-1ÊÇÎªÁË·ÀÖ¹²»Í¬ÄäÃû½ÇÉ«µÄÀÛ¼Ó)
+					impactor=CandidateMappings.get(originalIndex); //(impactor-1ï¿½ï¿½Îªï¿½Ë·ï¿½Ö¹ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½Û¼ï¿½)
 					CandidateMappings.put(originalIndex, impactor);			
 				}
-				else //¸ÅÄîµÄÇé¿ö
+				else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					CandidateMappings.put(originalIndex, impactor);	
 				}		
@@ -1034,9 +1805,9 @@ public class RepairerGraph implements Flagger
 		if(CandidateMappings.isEmpty())
 			return -1;
 		List<Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer,Integer>>(CandidateMappings.entrySet());
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collections.sort(list,new Comparator<Map.Entry<Integer,Integer>>() {
-            //½µÐòÅÅÐò
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public int compare(Entry<Integer, Integer> o1,
                     Entry<Integer, Integer> o2) {
                 return o2.getValue().compareTo(o1.getValue());
@@ -1075,29 +1846,29 @@ public class RepairerGraph implements Flagger
 	
 	
 	
-	private int getCandidateMappingByVadidityRatio()  //¸ù¾ÝJWS2012µÄµÄimpactorº¯Êý½øÐÐÅÅÐò
+	private int getCandidateMappingByVadidityRatio()  //ï¿½ï¿½ï¿½ï¿½JWS2012ï¿½Äµï¿½impactorï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	{				
 		double validatityRatio=0.75;
-		if(iteration!=1) //¸ù¾ÝÅÐ¶ÏµÄÇé¿ö½øÐÐ×Ô¶¯µ÷½Ú
+		if(iteration!=1) //ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½
 			validatityRatio=wantMappings.size()*1.0/(wantMappings.size()+unwantMappings.size());		
 		int candidateMapping = -1;
 		HashMap<Integer,Double> CandidateMappings=new HashMap<Integer,Double>();	
 		double sum=0;
-		for(int i=0;i<maps.size();i++)  //ÕâÀïÖ»¶Ô´ýÆÀ¹ÀµÄmappings½øÐÐÅÅÐò
+		for(int i=0;i<maps.size();i++)  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			if(maps.get(i).getStatus().equals(MappingStatus.UNKNOWN))
 				sum++;
 		}
 			
-		for(int i=0;i<maps.size();i++)  //ÕâÀïÖ»¶Ô´ýÆÀ¹ÀµÄmappings½øÐÐÅÅÐò
+		for(int i=0;i<maps.size();i++)  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			if(maps.get(i).getStatus().equals(MappingStatus.UNKNOWN))
 			{					
-				double impactPlus=obtainImpactPlus(i)/sum; //»ñÈ¡ÕýÃæÓ°ÏìµÄÖµ
-				double impactConflict=obtainImpactConflict(i)/sum; //»ñÈ¡³åÍ»Ó°ÏìµÄÖµ
-				double impactMinor=obtainImpactMinor(i)/sum;   //»ñÈ¡·´ÃæÓ°ÏìµÄÖµ 
+				double impactPlus=obtainImpactPlus(i)/sum; //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½Öµ
+				double impactConflict=obtainImpactConflict(i)/sum; //ï¿½ï¿½È¡ï¿½ï¿½Í»Ó°ï¿½ï¿½ï¿½Öµ
+				double impactMinor=obtainImpactMinor(i)/sum;   //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½Öµ 
                
-				//»ñÈ¡±ê×¼»¯µÄÖµ²¢ÇÒËÄÉáÎåÈë
+				//ï¿½ï¿½È¡ï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				double normImpactPlus=-Math.abs(validatityRatio-impactPlus);
 				BigDecimal b1 = new BigDecimal(normImpactPlus);  
 				normImpactPlus = b1.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue(); 
@@ -1108,7 +1879,7 @@ public class RepairerGraph implements Flagger
 				BigDecimal b3 = new BigDecimal(normImpactMinor);  
 				normImpactMinor = b3.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue(); 
 			
-				//normµÄÊÇÒ»ÖÖÆ«²îµÄ´óÐ¡µÄºâÁ¿
+				//normï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Æ«ï¿½ï¿½Ä´ï¿½Ð¡ï¿½Äºï¿½ï¿½ï¿½
 				double norm=Math.max(normImpactPlus, Math.max(normImpactConflict, normImpactMinor));
 							
 				CandidateMappings.put(i, norm);	
@@ -1117,9 +1888,9 @@ public class RepairerGraph implements Flagger
 		if(CandidateMappings.isEmpty())
 			return -1;
 		List<Entry<Integer, Double>> list = new ArrayList<Map.Entry<Integer,Double>>(CandidateMappings.entrySet());
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collections.sort(list,new Comparator<Map.Entry<Integer,Double>>() {
-            //½µÐòÅÅÐò
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public int compare(Entry<Integer, Double> o1,
                     Entry<Integer, Double> o2) {
                 return o2.getValue().compareTo(o1.getValue());
@@ -1145,37 +1916,37 @@ public class RepairerGraph implements Flagger
 			}     
         } 
 		
-		//ÊÇ·ñ¿¼ÂÇÓÃÏàËÆ¶È½øÐÐÀ©Õ¹(µ«»ý¼«µÄ»¹ÊÇÏû¼«µÄ»¹ÊÇ²»Ì«ºÃËµ)
+		//ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶È½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½Ç²ï¿½Ì«ï¿½ï¿½Ëµ)
 		candidateMapping=impactorMapping.get(0);		
 		return candidateMapping;	
 	}
 	
-	private int getCandidateMappingByVadidityRatio2()  //¸ù¾ÝJWS2012µÄµÄimpactorº¯Êý½øÐÐÅÅÐò
+	private int getCandidateMappingByVadidityRatio2()  //ï¿½ï¿½ï¿½ï¿½JWS2012ï¿½Äµï¿½impactorï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	{				
 		double validatityRatio=0.5;
 		HashMap<Integer,Boolean> mappingJudge=new HashMap<Integer,Boolean>();
-		if(iteration!=1) //¸ù¾ÝÅÐ¶ÏµÄÇé¿ö½øÐÐ×Ô¶¯µ÷½Ú
+		if(iteration!=1) //ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½
 			validatityRatio=wantMappings.size()*1.0/(wantMappings.size()+unwantMappings.size());		
 		int candidateMapping = -1;
 		HashMap<Integer,Double> CandidateMappings=new HashMap<Integer,Double>();	
 		double sum=0;
-		for(int i=0;i<maps.size();i++)  //ÕâÀïÖ»¶Ô´ýÆÀ¹ÀµÄmappings½øÐÐÅÅÐò
+		for(int i=0;i<maps.size();i++)  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			if(maps.get(i).getStatus().equals(MappingStatus.UNKNOWN))
 				sum++;
 		}
 		
-		//ÕýÏòÆ«²îÓë·´ÏòÆ«²î
-		for(int i=0;i<maps.size();i++)  //ÕâÀïÖ»¶Ô´ýÆÀ¹ÀµÄmappings½øÐÐÅÅÐò
+		//ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½ï¿½ë·´ï¿½ï¿½Æ«ï¿½ï¿½
+		for(int i=0;i<maps.size();i++)  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			boolean flag=true;
 			if(maps.get(i).getStatus().equals(MappingStatus.UNKNOWN))
 			{					
-				double impactPlus=obtainImpactPlus(i)/sum; //»ñÈ¡ÕýÃæÓ°ÏìµÄÖµ
-				double impactConflict=obtainImpactConflict(i)/sum; //»ñÈ¡³åÍ»Ó°ÏìµÄÖµ
-				double impactMinor=obtainImpactMinor(i)/sum;   //»ñÈ¡·´ÃæÓ°ÏìµÄÖµ 
+				double impactPlus=obtainImpactPlus(i)/sum; //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½Öµ
+				double impactConflict=obtainImpactConflict(i)/sum; //ï¿½ï¿½È¡ï¿½ï¿½Í»Ó°ï¿½ï¿½ï¿½Öµ
+				double impactMinor=obtainImpactMinor(i)/sum;   //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½Öµ 
                
-				//»ñÈ¡±ê×¼»¯µÄÖµ²¢ÇÒËÄÉáÎåÈë
+				//ï¿½ï¿½È¡ï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				double normImpactPlus=-Math.abs(validatityRatio-impactPlus);
 				BigDecimal b1 = new BigDecimal(normImpactPlus);  
 				normImpactPlus = b1.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue(); 
@@ -1186,7 +1957,7 @@ public class RepairerGraph implements Flagger
 				BigDecimal b3 = new BigDecimal(normImpactMinor);  
 				normImpactMinor = b3.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue(); 
 			
-				//normµÄÊÇÒ»ÖÖÆ«²îµÄ´óÐ¡µÄºâÁ¿
+				//normï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Æ«ï¿½ï¿½Ä´ï¿½Ð¡ï¿½Äºï¿½ï¿½ï¿½
 				double norm=Math.max(normImpactPlus, Math.max(normImpactConflict, normImpactMinor));
 				if(norm==normImpactPlus||norm==normImpactConflict)
 					flag=true;
@@ -1200,9 +1971,9 @@ public class RepairerGraph implements Flagger
 		if(CandidateMappings.isEmpty())
 			return -1;
 		List<Entry<Integer, Double>> list = new ArrayList<Map.Entry<Integer,Double>>(CandidateMappings.entrySet());
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collections.sort(list,new Comparator<Map.Entry<Integer,Double>>() {
-            //½µÐòÅÅÐò
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public int compare(Entry<Integer, Double> o1,
                     Entry<Integer, Double> o2) {
                 return o2.getValue().compareTo(o1.getValue());
@@ -1228,7 +1999,7 @@ public class RepairerGraph implements Flagger
 			}     
         } 
 		
-		//ÊÇ·ñ¿¼ÂÇÓÃÏàËÆ¶È½øÐÐÀ©Õ¹(µ«»ý¼«µÄ»¹ÊÇÏû¼«µÄ»¹ÊÇ²»Ì«ºÃËµ)
+		//ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶È½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½Ç²ï¿½Ì«ï¿½ï¿½Ëµ)
 		//candidateMapping=impactorMapping.get(0);	
 		if(impactorMapping.size()==1)
 		{
@@ -1236,9 +2007,9 @@ public class RepairerGraph implements Flagger
 		}
 		else
 		{
-			Boolean judge=mappingJudge.get(impactorMapping.get(0)); //»òÕßÔÞÍ¬»¹ÊÇ¾Ü¾øµÄÇ÷ÊÆ
+			Boolean judge=mappingJudge.get(impactorMapping.get(0)); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Ç¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			ArrayList<Integer> WeightsMapping=new ArrayList<Integer>();
-			WeightsMapping=selectCandidateMappingByWeight(impactorMapping,judge); //¸ù¾Ý¾Ü¾ø»¹ÊÇÔÞÍ¬»¹¾õµÃÅÅÐòµÄ·½Ê½,ÔÞÍ¬ÔòÊÇ½µÐò£¬¾Ü¾øÔòÊÇÉýÐò		
+			WeightsMapping=selectCandidateMappingByWeight(impactorMapping,judge); //ï¿½ï¿½ï¿½Ý¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½Ê½,ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Ç½ï¿½ï¿½ò£¬¾Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		
 			candidateMapping=WeightsMapping.get(0);		
 		}		
 		return candidateMapping;		
@@ -1298,14 +2069,13 @@ public class RepairerGraph implements Flagger
 		int worstMapping = -1;
 		Map<Integer, Integer> map = new TreeMap<Integer, Integer>();
 		for(Integer mappings: rMap.getMapMinimalConflictSets().keySet())
-		{
-			map.put(mappings,rMap.getMapMinimalConflictSets().get(mappings).size());		
+		{		
+			map.put(mappings,rMap.getMapMinimalConflictSets().get(mappings).size());	
 		}
-		
 		List<Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer,Integer>>(map.entrySet());
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collections.sort(list,new Comparator<Map.Entry<Integer,Integer>>() {
-            //½µÐòÅÅÐò
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public int compare(Entry<Integer, Integer> o1,
                     Entry<Integer, Integer> o2) {
                 return o2.getValue().compareTo(o1.getValue());
@@ -1339,6 +2109,78 @@ public class RepairerGraph implements Flagger
 		{
 			ArrayList<Integer> commonEntailment=new ArrayList<Integer>();
 			commonEntailment=getMinimalEntailment2(CardMapping);
+			if(commonEntailment.size()==1)
+				worstMapping=commonEntailment.get(0);
+			else
+			{
+				ArrayList<Integer> WeightsMapping=new ArrayList<Integer>();
+				WeightsMapping=getminimalWeight2(commonEntailment);
+				worstMapping=WeightsMapping.get(0);
+			}
+		}
+		return worstMapping;
+	}
+	
+	private int getIncorrectMapping3()
+	{	
+		int worstMapping = -1;
+		Map<Integer, Integer> map = new TreeMap<Integer, Integer>();
+		for(Integer mappings: rMap.getMapMinimalConflictSets().keySet())  //ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		{		
+			System.out.println("The Id is "+mappings+" "+maps.get(mappings).toString());
+			int impactConflict = rMap.getMapMinimalConflictSets().get(mappings).size(); // ï¿½ï¿½È¡ï¿½ï¿½Í»Ó°ï¿½ï¿½ï¿½Öµ
+			int originalIndex = restoreRoleMapping(mappings);
+			if (map.containsKey(originalIndex)) // ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
+			{
+				int impactor = impactConflict + map.get(originalIndex); // (impactor-1ï¿½ï¿½Îªï¿½Ë·ï¿½Ö¹ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½Û¼ï¿½)
+				map.put(originalIndex, impactor);
+			} 
+			else 
+			{
+				/*if(mappings!=originalIndex) //ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					impactConflict++;*/
+				map.put(originalIndex, impactConflict);
+			}
+		}
+		
+	
+		List<Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer,Integer>>(map.entrySet());
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        Collections.sort(list,new Comparator<Map.Entry<Integer,Integer>>() {
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            public int compare(Entry<Integer, Integer> o1,
+                    Entry<Integer, Integer> o2) {
+                return o2.getValue().compareTo(o1.getValue());
+            }         
+        });
+		
+		ArrayList<Integer> CardMapping=new ArrayList<Integer>();
+		int maxCard = 0;
+		 for(Entry<Integer, Integer> mapping:list)
+		{ 
+            int key=mapping.getKey();
+            if(maxCard==0)
+         	{
+         		maxCard=mapping.getValue();
+         		CardMapping.add(key);
+         	}
+            else if(maxCard==mapping.getValue())
+        		CardMapping.add(key);
+        	else 
+        	{
+				break;
+			}     
+        } 
+		if(maxCard==0) //no MIPPs
+			return -1;
+		if(CardMapping.size()==1)
+		{
+			worstMapping=CardMapping.get(0);		
+		}
+		else
+		{
+			ArrayList<Integer> commonEntailment=new ArrayList<Integer>();
+			commonEntailment=getMinimalEntailment3(CardMapping);
 			if(commonEntailment.size()==1)
 				worstMapping=commonEntailment.get(0);
 			else
@@ -1413,9 +2255,66 @@ public class RepairerGraph implements Flagger
 		}
 		
 		List<Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer,Integer>>(map.entrySet());
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collections.sort(list,new Comparator<Map.Entry<Integer,Integer>>() {
-            //ÉýÐòÅÅÐò
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            public int compare(Entry<Integer, Integer> o1,
+                    Entry<Integer, Integer> o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }         
+        });
+		
+		ArrayList<Integer> commonEntailmentMappping=new ArrayList<Integer>();
+		int commonNum = -1;
+		 for(Entry<Integer, Integer> mapping:list)
+		{ 
+            int key=mapping.getKey();
+            if(commonNum==-1)
+         	{
+            	commonNum=mapping.getValue();
+         		commonEntailmentMappping.add(key);
+         	}
+            else if(commonNum==mapping.getValue())
+            	commonEntailmentMappping.add(key);
+        	else 
+        	{
+				break;
+			}     
+        }
+		return commonEntailmentMappping;
+	}
+	
+	private ArrayList<Integer> getMinimalEntailment3(ArrayList<Integer> maxCardMapping) 
+	{
+		Map<Integer, Integer> map = new TreeMap<Integer, Integer>();	
+		for(Integer mappings:maxCardMapping)
+		{
+			HashSet<Integer> indexSet=new HashSet<Integer>();
+			if(aml.getAlignment().getPropertyMap().containsKey(mappings))
+				indexSet.addAll(aml.getAlignment().getPropertyMap().get(mappings));
+			else
+				indexSet.add(mappings);
+			indexSet.retainAll(rMap.MapMinimalConflictSet.keySet()); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½Ö¤
+			int num=0;
+			for(Integer in:indexSet)
+			{
+				for(Pair<ArrayList<Integer>, ArrayList<Integer>> mipp:rMap.getMapMinimalConflictSets().get(in))
+				{
+					HashMap<Integer, Integer> commonEntailment=mipp.getCommonEntailment();
+					for(Integer path:commonEntailment.keySet())
+					{
+						if(path==mappings)
+							num=num+commonEntailment.get(path);
+					}
+				}
+			}
+			map.put(mappings, num);
+		}
+		
+		List<Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer,Integer>>(map.entrySet());
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        Collections.sort(list,new Comparator<Map.Entry<Integer,Integer>>() {
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public int compare(Entry<Integer, Integer> o1,
                     Entry<Integer, Integer> o2) {
                 return o1.getValue().compareTo(o2.getValue());
@@ -1478,9 +2377,9 @@ public class RepairerGraph implements Flagger
 			map.put(mappings, weight);
 		}
 		List<Entry<Integer, Double>> list = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet());
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collections.sort(list,new Comparator<Map.Entry<Integer,Double>>() {
-            //ÉýÐòÅÅÐò
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public int compare(Entry<Integer, Double> o1,
                     Entry<Integer, Double> o2) {
                 return o1.getValue().compareTo(o2.getValue());
@@ -1519,10 +2418,10 @@ public class RepairerGraph implements Flagger
 		List<Entry<Integer, Double>> list = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet());
 		
 		
-        //È»ºóÍ¨¹ý±È½ÏÆ÷À´ÊµÏÖÅÅÐò
+        //È»ï¿½ï¿½Í¨ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if(Judge==false)
 		{
-			Collections.sort(list,new Comparator<Map.Entry<Integer, Double>>() {// ÉýÐòÅÅÐò
+			Collections.sort(list,new Comparator<Map.Entry<Integer, Double>>() {// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 						public int compare(Entry<Integer, Double> o1,
 								Entry<Integer, Double> o2) {
 							return o1.getValue().compareTo(o2.getValue());
@@ -1530,7 +2429,7 @@ public class RepairerGraph implements Flagger
 					});
 		}
 		else {
-			Collections.sort(list,new Comparator<Map.Entry<Integer, Double>>() {// ½µÐòÅÅÐò
+			Collections.sort(list,new Comparator<Map.Entry<Integer, Double>>() {// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				public int compare(Entry<Integer, Double> o1,
 						Entry<Integer, Double> o2) {
 					return o2.getValue().compareTo(o1.getValue());
@@ -1574,7 +2473,7 @@ public class RepairerGraph implements Flagger
 					num=num+commonEntailment.get(path).size();
 				}
 			}	
-			flag=flag&&hasEntailments;  //ÆäÊµÕâ¸öÌõ¼þ±È½Ï²ÝÂÊ
+			flag=flag&&hasEntailments;  //ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È½Ï²ï¿½ï¿½ï¿½
 			if(!flag)
 				break;
 		}	
@@ -1589,14 +2488,14 @@ public class RepairerGraph implements Flagger
 		{
 			/*HashMap<Integer, Set<Integer>> commonEntailment=mipp.getCommonEntailment();
 			boolean hasEntailments=false;
-			if(commonEntailment.keySet().contains(mapping))  //ÆäÊµÕâ¸öÌõ¼þ±È½Ï²ÝÂÊ
+			if(commonEntailment.keySet().contains(mapping))  //ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È½Ï²ï¿½ï¿½ï¿½
 			{
 				hasEntailments=true;
 			}*/
 			
 			HashMap<Integer, Integer> commonEntailment=mipp.getCommonEntailment();
 			boolean hasEntailments=false;
-			if(commonEntailment.keySet().contains(mapping))  //ÆäÊµÕâ¸öÌõ¼þ±È½Ï²ÝÂÊ
+			if(commonEntailment.keySet().contains(mapping))  //ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È½Ï²ï¿½ï¿½ï¿½
 			{
 				hasEntailments=true;
 			}
@@ -1604,6 +2503,62 @@ public class RepairerGraph implements Flagger
 			if(!flag)
 				break;
 		}	
+		return flag;
+	}
+	
+	private boolean ExistCommonEntailment3(int mapping)
+	{
+		int num=0;	
+		HashSet<Integer> indexSet=new HashSet<Integer>();
+		if(aml.getAlignment().getPropertyMap().containsKey(mapping))
+			indexSet.addAll(aml.getAlignment().getPropertyMap().get(mapping));
+		else
+			indexSet.add(mapping);
+		indexSet.retainAll(rMap.MapMinimalConflictSet.keySet()); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½Ö¤	
+		for(int index:indexSet)
+		{
+			for(Pair<ArrayList<Integer>, ArrayList<Integer>> mipp: rMap.getMapMinimalConflictSets().get(index))
+			{
+				HashMap<Integer, Integer> commonEntailment=mipp.getCommonEntailment();
+				if(commonEntailment.keySet().contains(index))  //ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È½Ï²ï¿½ï¿½ï¿½
+				{
+					num++;
+				}
+
+			}
+			if(num!=0)
+				return true;			
+		}
+		return false;
+	}
+	
+	private boolean ExistCommonEntailment4(int mapping)
+	{
+		int num=0;
+		HashSet<Integer> indexSet=new HashSet<Integer>();
+		boolean flag=true;
+		if(aml.getAlignment().getPropertyMap().containsKey(mapping))
+			indexSet.addAll(aml.getAlignment().getPropertyMap().get(mapping));
+		else
+			indexSet.add(mapping);
+		indexSet.retainAll(rMap.MapMinimalConflictSet.keySet()); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½Ö¤	
+		for(int index:indexSet)
+		{
+		for(Pair<ArrayList<Integer>, ArrayList<Integer>> mipp: rMap.getMapMinimalConflictSets().get(index))
+		{
+
+			
+			HashMap<Integer, Integer> commonEntailment=mipp.getCommonEntailment();
+			boolean hasEntailments=false;
+			if(commonEntailment.keySet().contains(index))  //ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È½Ï²ï¿½ï¿½ï¿½
+			{
+				hasEntailments=true;
+			}
+			flag=flag&&hasEntailments; 
+			if(!flag)
+				break;
+		}	
+		}
 		return flag;
 	}
 	
@@ -1677,7 +2632,7 @@ public class RepairerGraph implements Flagger
 		Mapping m = aml.getAlignment().get(index);
 		int source = m.getSourceId();
 		int target = m.getTargetId();
-		MappingRelation r=null;  //Õâ¸öµÄ¹ØÏµÊÇ´æÔÚ¶ÔÓ¦µÄÇé¿ö,¼´µ±Ç°mappingÊÇÊ²Ã´¹ØÏµ£¬ÄÇÃ´Ó°ÏìºóµÄmappingÒ²Ó¦ÓÐÍ¬ÑùµÄ¹ØÏµ
+		MappingRelation r=null;  //ï¿½ï¿½ï¿½ï¿½Ä¹ï¿½Ïµï¿½Ç´ï¿½ï¿½Ú¶ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Ç°mappingï¿½ï¿½Ê²Ã´ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ã´Ó°ï¿½ï¿½ï¿½ï¿½mappingÒ²Ó¦ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Ä¹ï¿½Ïµ
 		int num=0;
 		
 		if(m.getRelationship().equals(MappingRelation.SUBCLASS)||m.getRelationship().equals(MappingRelation.SUPERCLASS))
@@ -1723,7 +2678,7 @@ public class RepairerGraph implements Flagger
 		return num;
 	}
 
-	public int obtainImpactConflict(Integer index) //ÕâÀïÊµÏÖµÄÊÇ¼ò»¯µÄ°æ±¾¼´Í³¼ÆMIPS³åÍ»µÄÇé¿ö£¬ÒòÎª¸´ÔÓµÄ°æ±¾Éæ¼°µ½±Õ°ü£¬ÐèÒªÒ»Ö±µü´ú
+	public int obtainImpactConflict(Integer index) //ï¿½ï¿½ï¿½ï¿½Êµï¿½Öµï¿½ï¿½Ç¼ò»¯µÄ°æ±¾ï¿½ï¿½Í³ï¿½ï¿½MIPSï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ÓµÄ°æ±¾ï¿½æ¼°ï¿½ï¿½ï¿½Õ°ï¿½ï¿½ï¿½ï¿½ï¿½ÒªÒ»Ö±ï¿½ï¿½ï¿½ï¿½
 	{
 		int num=0;
 		HashSet<Set<Integer>> conflictSet=new HashSet<Set<Integer>>();
@@ -1732,9 +2687,9 @@ public class RepairerGraph implements Flagger
 			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet = new HashSet(rMap.MapMinimalConflictSet.get(index));
 			for (Pair<ArrayList<Integer>, ArrayList<Integer>> mipp : MIPPSet) 
 			{
-				// Í¨¹ýÂ·¾¶À´»ñÈ¡mappings(ÕâÀïµÄmappingÓ¦¸Ã¾ùÊÇÉÐÎ´±ê¼ÇµÄ,ÒòÎªÎÞÂÛÖ´ÐÐapprove»òÕßreject²Ù×÷£¬mappingÏàÓ¦µÄMIPS¶¼»á±»Ïû³ý)
+				// Í¨ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡mappings(ï¿½ï¿½ï¿½ï¿½ï¿½mappingÓ¦ï¿½Ã¾ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½,ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½approveï¿½ï¿½ï¿½ï¿½rejectï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Ó¦ï¿½ï¿½MIPSï¿½ï¿½ï¿½á±»ï¿½ï¿½ï¿½ï¿½)
 				Set<Integer> mappings = rMap.getMappings(mipp.left, mipp.right);
-				if (rMap.existRejectiveMapping(mappings, wantMappings, index)) // ÕâÀï¿ÉÒÔ½áºÏwantmappingÀ´Ïû³ý³åÍ»µÄÇé¿ö
+				if (rMap.existRejectiveMapping(mappings, wantMappings, index)) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½wantmappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					num++;
 				}
@@ -1743,7 +2698,7 @@ public class RepairerGraph implements Flagger
 		return num;
 	}
 	
-	public int obtainImpactConflict2(Integer index) //ÕâÀïÊµÏÖµÄÊÇ¼ò»¯µÄ°æ±¾¼´Í³¼ÆMIPS³åÍ»µÄÇé¿ö£¬ÒòÎª¸´ÔÓµÄ°æ±¾Éæ¼°µ½±Õ°ü£¬ÐèÒªÒ»Ö±µü´ú
+	public int obtainImpactConflict2(Integer index) //ï¿½ï¿½ï¿½ï¿½Êµï¿½Öµï¿½ï¿½Ç¼ò»¯µÄ°æ±¾ï¿½ï¿½Í³ï¿½ï¿½MIPSï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ÓµÄ°æ±¾ï¿½æ¼°ï¿½ï¿½ï¿½Õ°ï¿½ï¿½ï¿½ï¿½ï¿½ÒªÒ»Ö±ï¿½ï¿½ï¿½ï¿½
 	{
 		//int num=0;
 		HashSet<Set<Integer>> conflictSet=new HashSet<Set<Integer>>();
@@ -1752,9 +2707,9 @@ public class RepairerGraph implements Flagger
 			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet = new HashSet(rMap.MapMinimalConflictSet.get(index));
 			for (Pair<ArrayList<Integer>, ArrayList<Integer>> mipp : MIPPSet) 
 			{
-				// Í¨¹ýÂ·¾¶À´»ñÈ¡mappings(ÕâÀïµÄmappingÓ¦¸Ã¾ùÊÇÉÐÎ´±ê¼ÇµÄ,ÒòÎªÎÞÂÛÖ´ÐÐapprove»òÕßreject²Ù×÷£¬mappingÏàÓ¦µÄMIPS¶¼»á±»Ïû³ý)
+				// Í¨ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡mappings(ï¿½ï¿½ï¿½ï¿½ï¿½mappingÓ¦ï¿½Ã¾ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½,ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½approveï¿½ï¿½ï¿½ï¿½rejectï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Ó¦ï¿½ï¿½MIPSï¿½ï¿½ï¿½á±»ï¿½ï¿½ï¿½ï¿½)
 				Set<Integer> mappings = rMap.getMappings(mipp.left, mipp.right);
-				if (rMap.existRejectiveMapping(mappings, wantMappings, index)) // ÕâÀï¿ÉÒÔ½áºÏwantmappingÀ´Ïû³ý³åÍ»µÄÇé¿ö
+				if (rMap.existRejectiveMapping(mappings, wantMappings, index)) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½wantmappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					conflictSet.add(mappings);
 					//num++;
@@ -1769,7 +2724,7 @@ public class RepairerGraph implements Flagger
 		Mapping m = aml.getAlignment().get(index);
 		int source = m.getSourceId();
 		int target = m.getTargetId();
-		MappingRelation r=MappingRelation.EQUIVALENCE;  //Õâ¸öµÄ¹ØÏµÊÇ´æÔÚ¶ÔÓ¦µÄÇé¿ö,¼´µ±Ç°mappingÊÇÊ²Ã´¹ØÏµ£¬ÄÇÃ´Ó°ÏìºóµÄmappingÒ²Ó¦ÓÐÍ¬ÑùµÄ¹ØÏµ
+		MappingRelation r=MappingRelation.EQUIVALENCE;  //ï¿½ï¿½ï¿½ï¿½Ä¹ï¿½Ïµï¿½Ç´ï¿½ï¿½Ú¶ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Ç°mappingï¿½ï¿½Ê²Ã´ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ã´Ó°ï¿½ï¿½ï¿½ï¿½mappingÒ²Ó¦ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Ä¹ï¿½Ïµ
 		int num=0;
 				
 		boolean flag=false;
@@ -1940,7 +2895,7 @@ public class RepairerGraph implements Flagger
 					System.out.print(aml.getURIMap().getLocalName(ran)+" ");
 				}	
 			}
-			else { //¿ÉÄÜÊôÐÔÆ¥ÅäµÄÀàÐÍ²»Ò»Ñù£¬Ò»¸öÊÇ¶ÔÏóÊôÐÔ£¬Ò»¸öÊýÖµÊôÐÔ
+			else { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í²ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ç¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½
 				DataProperty dataProperty2=aml.getTarget().getDataProperty(targetId);
 				Set<Integer> domain2=dataProperty2.getDomain();
 				Set<String> range2=dataProperty2.getRange();
@@ -2011,7 +2966,7 @@ public class RepairerGraph implements Flagger
 					System.out.print(ran+" ");
 				}	
 			}
-			else { //¿ÉÄÜÊôÐÔÆ¥ÅäµÄÀàÐÍ²»Ò»Ñù£¬Ò»¸öÊÇ¶ÔÏóÊôÐÔ£¬Ò»¸öÊýÖµÊôÐÔ
+			else { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í²ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ç¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½
 				ObjectProperty objectProperty2=aml.getTarget().getObjectProperty(targetId);
 				Set<Integer> domain2=objectProperty2.getDomain();
 				Set<Integer> range2=objectProperty2.getRange();

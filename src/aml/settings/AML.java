@@ -917,9 +917,9 @@ public class AML
 		
 		//r.AutoBasedReferenceAlignmentOne2OneRevised();		
 		//r.AutoBasedReferenceAlignmentChristianTool();	
-		//r.AutoBasedReferenceAlignmentAutoGraphRepair1();
+		r.AutoBasedReferenceAlignmentAutoGraphRepair1();
 		//r.AutoBasedReferenceAlignmentAutoGraphRepair2();
-		r.AutoBasedReferenceAlignmentSimpleAutoGraphRepair();	
+		//r.AutoBasedReferenceAlignmentSimpleAutoGraphRepair();	
 		
 		//r.RevisedMappings();
 		

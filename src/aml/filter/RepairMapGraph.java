@@ -75,12 +75,12 @@ public class RepairMapGraph implements Iterable<Integer>
 	private HashMap<Integer,Set<Integer>> parentMap;
 	//The minimal map of ancestor relations of checkList classes
 	//(checkList class Id, classList class Id, Path)	
-	private Table3List<Integer,Integer,Path> ancestorMap;  //´æ´¢µÄpath¶¼ÊÇ½ö½öº¬ÓĞmapping µÄpath
+	private Table3List<Integer,Integer,Path> ancestorMap;  //ï¿½æ´¢ï¿½ï¿½pathï¿½ï¿½ï¿½Ç½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mapping ï¿½ï¿½path
 	//The length of ancestral paths to facilitate transitive closure
 	//(checklist class Id, Path length, classList class Id)
 	
-	//ÏÂÃæµÄÊı¾İ½á¹¹¿ÉÄÜ¶¼ĞèÒª¿³µô£¬ÉõÖÁancestorMap¶¼ĞèÒªÓÅ»¯Ò»ÏÂ
-	private Table3Set<Integer,Integer,Integer> pathLengths;  //Õâ¸öpath£¬½ö½öÊÇº¬ÓĞmappingµÄpath	
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ½á¹¹ï¿½ï¿½ï¿½Ü¶ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ancestorMapï¿½ï¿½ï¿½ï¿½Òªï¿½Å»ï¿½Ò»ï¿½ï¿½
+	private Table3Set<Integer,Integer,Integer> pathLengths;  //ï¿½ï¿½ï¿½pathï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çºï¿½ï¿½ï¿½mappingï¿½ï¿½path	
 	//The number of paths to disjoint classes
 	private int pathCount;
 	//The list of conflict sets
@@ -326,7 +326,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		{
 			for(Integer dis:rels.getDisjoint(con))
 			{
-				if(sourceConcepts.contains(dis))  //²»ÊÇÄ£¿é»¯ÄÚ²¿µÄ¸ÅÄî²»¿¼ÂÇ
+				if(sourceConcepts.contains(dis))  //ï¿½ï¿½ï¿½ï¿½Ä£ï¿½é»¯ï¿½Ú²ï¿½ï¿½Ä¸ï¿½ï¿½î²»ï¿½ï¿½ï¿½ï¿½
 				{
 					if(sourceDisRel.keySet().contains(con))
 					{
@@ -348,7 +348,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		{
 			for(Integer dis:rels.getDisjoint(con))
 			{
-				if(targetConcepts.contains(dis))  //²»ÊÇÄ£¿é»¯ÄÚ²¿µÄ¸ÅÄî²»¿¼ÂÇ
+				if(targetConcepts.contains(dis))  //ï¿½ï¿½ï¿½ï¿½Ä£ï¿½é»¯ï¿½Ú²ï¿½ï¿½Ä¸ï¿½ï¿½î²»ï¿½ï¿½ï¿½ï¿½
 				{
 					if(targetDisRel.keySet().contains(con))
 					{
@@ -381,9 +381,10 @@ public class RepairMapGraph implements Iterable<Integer>
 		LP2.generatePossbileWorldIndex();
 		
 		int MergedWorldNumber=LP1.getPossibleWordIndex().size()*LP2.getPossibleWordIndex().size();
-		if(MergedWorldNumber>=10000)  //ÒòÎª¼ÆËã¸´ÔÓ¶È¶ø×öµÄÍ×Ğ­
+		if(MergedWorldNumber>=10000)  //ï¿½ï¿½Îªï¿½ï¿½ï¿½ã¸´ï¿½Ó¶È¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ­
 		{
-			revise(index,0.1);
+			//revise(index,0.1);
+			revise2(index,0.1);
 			return true;			
 		}
 		
@@ -396,34 +397,230 @@ public class RepairMapGraph implements Iterable<Integer>
 			Mapping map=a.get(m);
 			if(map.getRelationship().toString().equals("="))
 				initialMappings.add(map.getSourceId()+","+map.getTargetId()+","+map.getRelationship().toString()+","+map.getSimilarity()+","+1.0);
-			else if(map.getRelationship().toString().equals("<")) //Ö÷ÒªÊÇÕë¶ÔlogMap
+			else if(map.getRelationship().toString().equals("<")) //ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½logMap
 				initialMappings.add(map.getSourceId()+","+map.getTargetId()+","+"|"+","+map.getSimilarity()+","+1.0);
 			System.out.println(map.getSourceId()+","+map.getTargetId()+","+map.getRelationship().toString()+","+map.getSimilarity()+","+1.0);
 		}
-		//ÔÚÔ­Ê¼µÄ³åÍ»ÖĞ×öÒÆ³ı´¦Àí	
+		//ï¿½ï¿½Ô­Ê¼ï¿½Ä³ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½	
 		LPGlobal.mergeConcept(sourceConcepts,targetConcepts);
 		LPGlobal.mergePossbileWorldIndex(LP1.getPossibleWordIndex(),LP2.getPossibleWordIndex());
 		LPGlobal.addhardConstraints(conditionalConstraints);	
-		LPGlobal.addMapping(initialMappings);  //Ö®Ç°ÒÑ¾­Ìí¼Ó¹ıÒ»´ÎÁË
+		LPGlobal.addMapping(initialMappings);  //Ö®Ç°ï¿½Ñ¾ï¿½ï¿½ï¿½Ó¹ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
 		
 		Boolean flag=LPGlobal.isProSatifiable(initialMappings);
-		System.out.println("The mappings are coherent£¿:  "+flag);
-		if(flag==false)  //²»¿É½â£¬ĞèÒª½øĞĞĞŞ¸´
+		System.out.println("The mappings are coherentï¿½ï¿½:  "+flag);
+		if(flag==false)  //ï¿½ï¿½ï¿½É½â£¬ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ş¸ï¿½
 		{
 			Mapping RevisedMap=a.get(index);
 			String mapInformation=RevisedMap.getSourceId()+","+RevisedMap.getTargetId()+","+RevisedMap.getRelationship().toString()+","+RevisedMap.getSimilarity()+","+1.0;
 			LPGlobal.Revised(mapInformation);				
 			String parts[] = LPGlobal.getRevisedMapping().split(",");
-			revise(index,Double.parseDouble(parts[4]));
+			//revise(index,Double.parseDouble(parts[4]));
+			revise2(index,Double.parseDouble(parts[4]));
 			return true;
 		}
-		else //ÎŞÃ¬¶Ü£¬É¶¶¼²»ĞŞ¸Ä
+		else //ï¿½ï¿½Ã¬ï¿½Ü£ï¿½É¶ï¿½ï¿½ï¿½ï¿½ï¿½Ş¸ï¿½
 		{
-			remove(index,false);
+			//remove(index,false);
+			remove2(index,false);
 			return false;
+		}		
+	}
+	
+	public Vector<Mapping> structureRefine(Vector<Mapping> mappings, HashSet<Integer> indexSet)
+	{
+		Vector<Mapping> tempMapping =new Vector<Mapping>();
+//		boolean flag[]=new boolean[mappings.size()];
+//		int num=0;
+		for(Mapping m:mappings)
+		{
+//			num++;
+//			System.out.println("The number of checking mapping is "+ (num-1));
+			//judge which mapping is checked
+//			if(flag[mappings.indexOf(m)])
+//				continue;		
+			//ä¸“é—¨æŠ½å‡ºæ¥ï¼Œä½œä¸ºä¸€ä¸ªåŠŸèƒ½ï¼ŒåŸºäºä¸€ä¸ªmè¿”å›
+			
+			int sourceConcept=m.getSourceId();	
+
+			Set<Integer> sourceAncestors=rels.getSuperClasses(sourceConcept, true);
+			Set<Integer> sourceDescendants=rels.getSubClasses(sourceConcept, true);
+			
+			int targetConcept=m.getTargetId();
+			Set<Integer> targetAncestors=rels.getSuperClasses(targetConcept, true);
+			Set<Integer> targetDescendants=rels.getSubClasses(targetConcept, true);
+
+			//find the potential mappings based on concepts' ancestors
+			Vector<Mapping> tempAncestorsMapping=new Vector<Mapping>();
+			HashSet<Integer> riskfather=new HashSet<Integer> ();
+			for(int conId:sourceAncestors)
+			{	
+				//Set<Integer> targetConceptSet = aml.getAlignment().getSourceMappings(conId);	
+				Set<Integer> targetConceptSet = new HashSet<Integer>(aml.getAlignment().getSourceMappings(conId));			
+				targetConceptSet.retainAll(targetAncestors);
+				for(int id:targetConceptSet)
+				{
+					Mapping ancestorMapping = aml.getAlignment().getBidirectional(conId, id);
+					int mapID=aml.getAlignment().getIndex(conId, id);
+					if(indexSet.contains(mapID))
+						riskfather.add(mapID);
+					else
+						tempAncestorsMapping.add(ancestorMapping);
+				}			
+			}
+			
+			//find the potential mappings based on concepts' descendants
+			Vector<Mapping> tempDescendantsMapping=new Vector<Mapping>();
+			HashSet<Integer> riskchildren=new HashSet<Integer> ();
+			for(int conId: sourceDescendants)
+			{
+				//Set<Integer> targetConceptSet = aml.getAlignment().getSourceMappings(conId);
+				Set<Integer> targetConceptSet = new HashSet<Integer>(aml.getAlignment().getSourceMappings(conId));
+				targetConceptSet.retainAll(targetDescendants);
+				for(int id:targetConceptSet)
+				{
+					Mapping descendantsMapping = aml.getAlignment().getBidirectional(conId, id);
+					int mapID=aml.getAlignment().getIndex(conId, id);
+					if(indexSet.contains(mapID))
+						riskchildren.add(mapID);
+					else
+						tempDescendantsMapping.add(descendantsMapping);
+				}
+			}
+//			System.out.println(riskfather.size()*1.0/tempAncestorsMapping.size());
+//			System.out.println(riskchildren.size()*1.0/tempDescendantsMapping.size());
+			
+			if(!tempAncestorsMapping.isEmpty()||!tempDescendantsMapping.isEmpty())
+			{
+//				flag[mappings.indexOf(m)]=true;
+				if(riskfather.isEmpty()&&riskchildren.isEmpty()&&!tempMapping.contains(m)) //rough method
+					tempMapping.add(m);	
+//				if(riskfather.isEmpty()&&(tempDescendantsMapping.size()>=riskchildren.size())&&!tempMapping.contains(m)) 				
+//					tempMapping.add(m);	
+
+			}
+			
+//			if(!tempAncestorsMapping.isEmpty()||!tempDescendantsMapping.isEmpty())
+//			{
+//				flag[mappings.indexOf(m)]=true;
+//				tempMapping.add(m);
+//				for(Mapping am:tempAncestorsMapping)
+//				{
+//					if(!tempMapping.contains(am))	
+//						tempMapping.add(am);	
+//					flag[mappings.indexOf(am)]=true;
+//				}
+//				for(Mapping dm:tempDescendantsMapping)
+//				{
+//					if(!tempMapping.contains(dm))	
+//						tempMapping.add(dm);	
+//					flag[mappings.indexOf(dm)]=true;
+//				}
+//			}		
+		}
+		//updateGraph(tempMapping);
+		return tempMapping;	
+	}
+
+	
+	public void updateGraph(Mapping m)
+	{
+		
+			int source=m.getSourceId();
+			int target=m.getTargetId();
+			if(m.getRelationship().equals(MappingRelation.SUBCLASS)||m.getRelationship().equals(MappingRelation.EQUIVALENCE))
+			{
+				addEdge(source, target);
+			}
+			if(m.getRelationship().equals(MappingRelation.SUPERCLASS)||m.getRelationship().equals(MappingRelation.EQUIVALENCE))
+			{
+				addEdge(target, source);
+			}
+	}
+	
+	public void updateConflictSet(Mapping map, ArrayList<Mapping> reliableMappings,ArrayList<Mapping> unWantMappings)
+	{
+		
+		int sourceId=map.getSourceId();
+		int targetId=map.getTargetId();
+		int index = aml.getAlignment().getIndex(sourceId, targetId);
+		HashSet<Integer> indexSet=new HashSet<Integer>();
+		if(aml.getAlignment().getPropertyMap().containsKey(index))
+			indexSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		else
+			indexSet.add(index);
+		HashSet<Integer> unWantMappingIndex=new HashSet<Integer>();
+		indexSet.retainAll(MapMinimalConflictSet.keySet()); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½Ö¤
+		for(Integer in:indexSet)
+		{
+			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet = new HashSet(MapMinimalConflictSet.get(in));
+			for (Pair<ArrayList<Integer>, ArrayList<Integer>> mipp : MIPPSet) {
+				//é€šè¿‡è·¯å¾„æ¥è·å–mappings(è¿™é‡Œçš„mappingåº”è¯¥å‡æ˜¯å°šæœªæ ‡è®°çš„,å› ä¸ºæ— è®ºæ‰§è¡Œapproveæˆ–è€…rejectæ“ä½œï¼Œmappingç›¸åº”çš„MIPSéƒ½ä¼šè¢«æ¶ˆé™¤)
+				Set<Integer> mappings = getMappings(mipp.left, mipp.right); 
+				// if (mappings.size() == 2)
+				if (existRejectiveMapping(mappings, reliableMappings, in)) // è¿™é‡Œå¯ä»¥ç»“åˆwantmappingæ¥æ¶ˆé™¤å†²çªçš„æƒ…å†µ
+				{
+					mappings.remove(in);
+					for (Integer num : mappings) // å¦‚æœmappingsé›†åˆé™¤äº†indexä¸­çš„è¿™ä¸ªmappingï¼Œå‰©ä¸‹çš„è¿™ä¸ªä¸€å®šæ˜¯è¦è¢«æ‹’ç»çš„ã€‚
+					{
+						Mapping m = maps.get(num);
+						m.setStatus(MappingStatus.INCORRECT);
+						aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.INCORRECT);
+						if (!unWantMappings.contains(m))
+							unWantMappings.add(m);
+						int pairs[] = restoreMapping(m);
+						Set<Integer> potentialRemovedMappings = new HashSet<>();
+						// å¯¹äºè§’è‰²å±æ€§è¿›è¡Œä¸€ä¸ªæ½œåœ¨åˆ¤æ–­
+						int incorrectStart = pairs[0];
+						int incorrectEnd = pairs[1];
+						if (aml.getSource().getDataProperties().contains(incorrectStart)&& aml.getTarget().getDataProperties().contains(incorrectEnd)) 
+						{
+							potentialRemovedMappings = removeDataPropety4MapppingGraph(incorrectStart, incorrectEnd, reliableMappings,unWantMappings);
+						} 
+						else if (aml.getSource().getObjectProperties().contains(incorrectStart)&& aml.getTarget().getObjectProperties().contains(incorrectEnd)) 
+						{
+							potentialRemovedMappings = removeObjectPropety4MapppingGraph(incorrectStart, incorrectEnd, reliableMappings,unWantMappings);
+						}
+
+						for (Integer potentialmapping : potentialRemovedMappings) 
+						{
+							if (MapMinimalConflictSet.containsKey(potentialmapping))
+								unWantMappingIndex.add(potentialmapping);
+						}
+					}
+					unWantMappingIndex.addAll(mappings);
+				}
+			}		
 		}
 			
+		//æ›´æ–°MIPSs
+		for(Integer removedMapping: unWantMappingIndex)
+		{
+			if(!MapMinimalConflictSet.keySet().contains(removedMapping))
+				continue;
+			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> relatedMIPP=new HashSet(MapMinimalConflictSet.get(removedMapping));
+			MinimalConflictSet.removeAll(MapMinimalConflictSet.get(removedMapping));
+			MapMinimalConflictSet.remove(removedMapping);
+			Iterator<Entry<Integer, ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>>> iter = MapMinimalConflictSet
+					.entrySet().iterator();
+			while (iter.hasNext()) 
+			{
+				Integer r = iter.next().getKey();			
+				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP = removeAllMIPP(
+						MapMinimalConflictSet.get(r), relatedMIPP);
+				if (leftMIPP.isEmpty()) // ä¸ºç©ºåˆ™ç›´æ¥ç§»é™¤
+				{
+					iter.remove();
+				} else // æ›´æ–°åŸæ¥çš„MIPPSetsçš„å¤§å°
+				{
+					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets = new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(
+							leftMIPP);
+					MapMinimalConflictSet.put(r, MIPPSets);
+				}
+			}			
+		}
 	}
+
 	
 	public void one2oneRestriction(int index, ArrayList<Mapping> wantMappings, ArrayList<Mapping> unWantMappings)
 	{
@@ -433,7 +630,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		wantMappings.add(m);
 		
 		int correctpairs[]=restoreMapping(m);													
-		//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+		//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 		int correctStart = correctpairs[0];
 		int correctEnd = correctpairs[1];
 		if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -456,18 +653,18 @@ public class RepairMapGraph implements Iterable<Integer>
 				int source = tempMap.getSourceId();
 				int target = tempMap.getTargetId();
 				
-				if(sourceId==source||targetId==target)  //ÆäËû³öÀ´ÏàÍ¬±àºÅ¶¼Ó¦¸Ã±»¾Ü¾ø
+				if(sourceId==source||targetId==target)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½Å¶ï¿½Ó¦ï¿½Ã±ï¿½ï¿½Ü¾ï¿½
 				{
 					tempMap.setStatus(MappingStatus.INCORRECT);
 					aml.getAlignment().get(tempMap.getSourceId(), tempMap.getTargetId()).setStatus(MappingStatus.INCORRECT);
 					unWantMappings.add(tempMap);
 					
 					int pairs[]=restoreMapping(tempMap);												
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					int incorrectStart = pairs[0];
 					int incorrectEnd = pairs[1];
 					
-					//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+					//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 					{			
 						removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unWantMappings);
@@ -481,28 +678,28 @@ public class RepairMapGraph implements Iterable<Integer>
 		}
 	}
 	
-	//Christian¡¯ ToolµÄÖ§³Ö·½·¨
+	//Christianï¿½ï¿½ Toolï¿½ï¿½Ö§ï¿½Ö·ï¿½ï¿½ï¿½
 	public void entailBasedApprove(int index, ArrayList<Mapping> wantMappings, ArrayList<Mapping> unWantMappings)
 	{
-		//³éÈ¡MIPSsÖĞÎ¨Ò»Óëµ±Ç°ÔŞÍ¬mappingÃ¬¶ÜµÄmapping
+		//ï¿½ï¿½È¡MIPSsï¿½ï¿½Î¨Ò»ï¿½ëµ±Ç°ï¿½ï¿½Í¬mappingÃ¬ï¿½Üµï¿½mapping
 		HashSet<Integer> indexSet=new HashSet<Integer>();
 		if(aml.getAlignment().getPropertyMap().containsKey(index))
 			indexSet.addAll(aml.getAlignment().getPropertyMap().get(index));
 		else
 			indexSet.add(index);
 		HashSet<Integer> unWantMappingIndex=new HashSet<Integer>();
-		indexSet.retainAll(MapMinimalConflictSet.keySet()); //ÕâÑù¿ÉÒÔ±£Ö¤
+		indexSet.retainAll(MapMinimalConflictSet.keySet()); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½Ö¤
 		for(Integer in:indexSet)
 		{
 			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet = new HashSet(MapMinimalConflictSet.get(in));
 			for (Pair<ArrayList<Integer>, ArrayList<Integer>> mipp : MIPPSet) {
-				//Í¨¹ıÂ·¾¶À´»ñÈ¡mappings(ÕâÀïµÄmappingÓ¦¸Ã¾ùÊÇÉĞÎ´±ê¼ÇµÄ,ÒòÎªÎŞÂÛÖ´ĞĞapprove»òÕßreject²Ù×÷£¬mappingÏàÓ¦µÄMIPS¶¼»á±»Ïû³ı)
+				//Í¨ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡mappings(ï¿½ï¿½ï¿½ï¿½ï¿½mappingÓ¦ï¿½Ã¾ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½,ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½approveï¿½ï¿½ï¿½ï¿½rejectï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Ó¦ï¿½ï¿½MIPSï¿½ï¿½ï¿½á±»ï¿½ï¿½ï¿½ï¿½)
 				Set<Integer> mappings = getMappings(mipp.left, mipp.right); 
 				// if (mappings.size() == 2)
-				if (existRejectiveMapping(mappings, wantMappings, in)) // ÕâÀï¿ÉÒÔ½áºÏwantmappingÀ´Ïû³ı³åÍ»µÄÇé¿ö
+				if (existRejectiveMapping(mappings, wantMappings, in)) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½wantmappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					mappings.remove(in);
-					for (Integer num : mappings) // Èç¹ûmappings¼¯ºÏ³ıÁËindexÖĞµÄÕâ¸ömapping£¬Ê£ÏÂµÄÕâ¸öÒ»¶¨ÊÇÒª±»¾Ü¾øµÄ¡£
+					for (Integer num : mappings) // ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½indexï¿½Ğµï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Ê£ï¿½Âµï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ü¾ï¿½ï¿½Ä¡ï¿½
 					{
 						Mapping m = maps.get(num);
 						m.setStatus(MappingStatus.INCORRECT);
@@ -512,7 +709,7 @@ public class RepairMapGraph implements Iterable<Integer>
 
 						int pairs[] = restoreMapping(m);
 						Set<Integer> potentialRemovedMappings = new HashSet<>();
-						// ¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+						// ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 						int incorrectStart = pairs[0];
 						int incorrectEnd = pairs[1];
 						if (aml.getSource().getDataProperties().contains(incorrectStart)&& aml.getTarget().getDataProperties().contains(incorrectEnd)) 
@@ -535,7 +732,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			}		
 		}
 			
-		//¸üĞÂMIPSs
+		//ï¿½ï¿½ï¿½ï¿½MIPSs
 		for(Integer removedMapping: unWantMappingIndex)
 		{
 			if(!MapMinimalConflictSet.keySet().contains(removedMapping))
@@ -550,10 +747,10 @@ public class RepairMapGraph implements Iterable<Integer>
 				Integer r = iter.next().getKey();			
 				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP = removeAllMIPP(
 						MapMinimalConflictSet.get(r), relatedMIPP);
-				if (leftMIPP.isEmpty()) // Îª¿ÕÔòÖ±½ÓÒÆ³ı
+				if (leftMIPP.isEmpty()) // Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
 				{
 					iter.remove();
-				} else // ¸üĞÂÔ­À´µÄMIPPSetsµÄ´óĞ¡
+				} else // ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
 				{
 					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets = new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(
 							leftMIPP);
@@ -576,14 +773,14 @@ public class RepairMapGraph implements Iterable<Integer>
 			addEdge(target, source);
 		}
 		
-		//ÒòÎªmappingÒÑ¾­ÔŞÍ¬ÁË£¬ËùÒÔwantÓëunwantÖĞÉæ¼°mµÄ×Ó¹ØÏµ¶¼ĞèÒªÈ¥µô
+		//ï¿½ï¿½Îªmappingï¿½Ñ¾ï¿½ï¿½ï¿½Í¬ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½wantï¿½ï¿½unwantï¿½ï¿½ï¿½æ¼°mï¿½ï¿½ï¿½Ó¹ï¿½Ïµï¿½ï¿½ï¿½ï¿½ÒªÈ¥ï¿½ï¿½
 		RefreshSet(wantMappings,m);	
 		wantMappings.add(m);
 		RefreshSet(unWantMappings,m);		
 		
-		//Éæ¼°½ÇÉ«µÄÒ»´ÎÌ½Ë÷
+		//ï¿½æ¼°ï¿½ï¿½É«ï¿½ï¿½Ò»ï¿½ï¿½Ì½ï¿½ï¿½
 		int correctpairs[]=restoreMapping(m);													
-		//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+		//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 		int correctStart = correctpairs[0];
 		int correctEnd = correctpairs[1];
 		if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -638,14 +835,14 @@ public class RepairMapGraph implements Iterable<Integer>
 			int id=a.getIndexBidirectional(source, target);
 			/*System.out.println(a.get(id).getRelationship());
 			System.out.println(temp.getRelationship());*/
-			if(a.get(id).getRelationship().equals(temp.getRelationship())) //¿¼ÂÇµ½°üº¬¹ØÏµµÄÇé¿ö(¼ÙÉè½ÇÉ«ÖĞ²»´æÔÚ¸Ã°üº¬µÄÇé¿ö)
+			if(a.get(id).getRelationship().equals(temp.getRelationship())) //ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½Ğ²ï¿½ï¿½ï¿½ï¿½Ú¸Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 			{
 				RefreshSet(wantMappings,temp);
 				temp.setStatus(MappingStatus.CORRECT);
 				aml.getAlignment().get(source, target).setStatus(MappingStatus.CORRECT);	
 				if(!wantMappings.contains(temp))
 					wantMappings.add(temp);	
-				//Ìí¼Ó±ßµÄ²Ù×÷(µ«ÊÇµÈ¼ÛµÄÇé¿öÊÇ²»»á·¢ÉúµÄ)
+				//ï¿½ï¿½Ó±ßµÄ²ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ÇµÈ¼Ûµï¿½ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½á·¢ï¿½ï¿½ï¿½ï¿½)
 				if(temp.getRelationship().equals(MappingRelation.SUBCLASS))
 					addEdge(source, target);
 				else if(temp.getRelationship().equals(MappingRelation.SUPERCLASS))
@@ -656,7 +853,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			if(temp.getRelationship().equals(MappingRelation.SUBCLASS))
 			{
 				addEdge(source, target);
-				if(existEquivalence(wantMappings,temp))  //Ì½Ë÷µÈ¼ÛµÄÇ±ÔÚÇé¿ö
+				if(existEquivalence(wantMappings,temp))  //Ì½ï¿½ï¿½ï¿½È¼Ûµï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					RefreshSet(wantMappings,temp);
 					temp.setRelationship(MappingRelation.EQUIVALENCE);
@@ -664,7 +861,7 @@ public class RepairMapGraph implements Iterable<Integer>
 					aml.getAlignment().get(source, target).setStatus(MappingStatus.CORRECT);	
 					
 				    correctpairs=restoreMapping(temp);													
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					correctStart = correctpairs[0];
 					correctEnd = correctpairs[1];
 					if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -682,16 +879,16 @@ public class RepairMapGraph implements Iterable<Integer>
 			else if(temp.getRelationship().equals(MappingRelation.SUPERCLASS))
 			{
 				addEdge(target, source);
-				if(existEquivalence(wantMappings,temp))   //Ì½Ë÷Ç±ÔÚµÈ¼ÛµÄÇé¿ö
+				if(existEquivalence(wantMappings,temp))   //Ì½ï¿½ï¿½Ç±ï¿½ÚµÈ¼Ûµï¿½ï¿½ï¿½ï¿½
 				{
 					RefreshSet(wantMappings,temp);
 					temp.setRelationship(MappingRelation.EQUIVALENCE);
 					temp.setStatus(MappingStatus.CORRECT);
 					aml.getAlignment().get(source, target).setStatus(MappingStatus.CORRECT);	
 					
-					//Ç±ÔÚ½ÇÉ«µÄÌí¼Ó
+					//Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					correctpairs=restoreMapping(temp);													
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					correctStart = correctpairs[0];
 					correctEnd = correctpairs[1];
 					if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -715,9 +912,9 @@ public class RepairMapGraph implements Iterable<Integer>
 				if(!wantMappings.contains(temp))
 					wantMappings.add(temp);	
 				
-				//Ç±ÔÚ½ÇÉ«µÄÌí¼Ó
+				//Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				correctpairs=restoreMapping(temp);													
-				//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+				//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 				correctStart = correctpairs[0];
 				correctEnd = correctpairs[1];
 				if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -743,7 +940,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		for(Integer in:indexSet)
 		{
 			System.out.println("The number of related Minimal conflict sets is "+ MapMinimalConflictSet.get(in).size());
-			// ¸üĞÂÒ»±éMIPSs,µ«¼´Ê¹¾Ü¾øÁË¸Ämapping£¬Ò²²»ÄÜ±£Ö¤ÁíÍâÒ»¸ömappingÒ»¶¨ÊÇÕıÈ·»òÕß´íÎóµÄ£¬»¹ĞèÒª×¨¼ÒÀ´ÅĞ¶Ï
+			// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½MIPSs,ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ü¾ï¿½ï¿½Ë¸ï¿½mappingï¿½ï¿½Ò²ï¿½ï¿½ï¿½Ü±ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½mappingÒ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Òª×¨ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½
 			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet = new HashSet(MapMinimalConflictSet.get(in));
 			MinimalConflictSet.removeAll(MapMinimalConflictSet.get(in));
 			MapMinimalConflictSet.remove(in);
@@ -753,11 +950,11 @@ public class RepairMapGraph implements Iterable<Integer>
 				Integer r = iter.next().getKey();
 				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP = removeAllMIPP(
 						MapMinimalConflictSet.get(r), MIPPSet);
-				if (leftMIPP.isEmpty()) // Îª¿ÕÔòÖ±½ÓÒÆ³ı
+				if (leftMIPP.isEmpty()) // Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
 				{
 					// MapMinimalConflictSet.remove(r);
 					iter.remove();
-				} else // ¸üĞÂÔ­À´µÄMIPPSetsµÄ´óĞ¡
+				} else // ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
 				{
 					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets = new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(
 							leftMIPP);
@@ -769,16 +966,16 @@ public class RepairMapGraph implements Iterable<Integer>
 		Mapping m = a.get(index);
 		m.setStatus(MappingStatus.INCORRECT);
 		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.INCORRECT);
-		//ÒòÎªmappingÒÑ¾­¾Ü¾øÁË£¬ËùÒÔwantMappingÓëunWantMappingÖĞµÄ×Ó¹ØÏµ¶¼ĞèÒªÈ¥³ı(×¢Òâ×Ó¹ØÏµµÄ±ê¼Ç¶¼ÊÇunknown)
+		//ï¿½ï¿½Îªmappingï¿½Ñ¾ï¿½ï¿½Ü¾ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½wantMappingï¿½ï¿½unWantMappingï¿½Ğµï¿½ï¿½Ó¹ï¿½Ïµï¿½ï¿½ï¿½ï¿½ÒªÈ¥ï¿½ï¿½(×¢ï¿½ï¿½ï¿½Ó¹ï¿½Ïµï¿½Ä±ï¿½Ç¶ï¿½ï¿½ï¿½unknown)
 		RefreshSet(wantMappings,m);		
 		RefreshSet(unWantMappings,m);	
 		unWantMappings.add(m);	
 		
 		int pairs[]=restoreMapping(m);												
-		//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+		//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 		int incorrectStart = pairs[0];
 		int incorrectEnd = pairs[1];	
-		//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+		//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 		if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 		{			
 			removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unWantMappings);
@@ -789,28 +986,28 @@ public class RepairMapGraph implements Iterable<Integer>
 		}
 	}	
 	
-	//ÔŞÍ¬µÄ»°£¬ĞèÒªÖ´ĞĞ indexMappingÄÜÍÆµ¼µÄÇé¿ö£¬ÒÔ¼°ÓëindexMapping²úÉú³åÍ»µÄÇé¿ö
+	//ï¿½ï¿½Í¬ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ÒªÖ´ï¿½ï¿½ indexMappingï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½indexMappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½
 	public void approve(int index, ArrayList<Mapping> wantMappings, ArrayList<Mapping> unWantMappings)
 	{
-		//³éÈ¡MIPSsÖĞÎ¨Ò»Óëµ±Ç°ÔŞÍ¬mappingÃ¬¶ÜµÄmapping
+		//ï¿½ï¿½È¡MIPSsï¿½ï¿½Î¨Ò»ï¿½ëµ±Ç°ï¿½ï¿½Í¬mappingÃ¬ï¿½Üµï¿½mapping
 		HashSet<Integer> indexSet=new HashSet<Integer>();
 		if(aml.getAlignment().getPropertyMap().containsKey(index))
 			indexSet.addAll(aml.getAlignment().getPropertyMap().get(index));
 		else
 			indexSet.add(index);
 		HashSet<Integer> unWantMappingIndex=new HashSet<Integer>();
-		indexSet.retainAll(MapMinimalConflictSet.keySet()); //ÕâÑù¿ÉÒÔ±£Ö¤
+		indexSet.retainAll(MapMinimalConflictSet.keySet()); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½Ö¤
 		for(Integer in:indexSet)
 		{
 			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet = new HashSet(MapMinimalConflictSet.get(in));
 			for (Pair<ArrayList<Integer>, ArrayList<Integer>> mipp : MIPPSet) {
-				//Í¨¹ıÂ·¾¶À´»ñÈ¡mappings(ÕâÀïµÄmappingÓ¦¸Ã¾ùÊÇÉĞÎ´±ê¼ÇµÄ,ÒòÎªÎŞÂÛÖ´ĞĞapprove»òÕßreject²Ù×÷£¬mappingÏàÓ¦µÄMIPS¶¼»á±»Ïû³ı)
+				//Í¨ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡mappings(ï¿½ï¿½ï¿½ï¿½ï¿½mappingÓ¦ï¿½Ã¾ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½,ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½approveï¿½ï¿½ï¿½ï¿½rejectï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Ó¦ï¿½ï¿½MIPSï¿½ï¿½ï¿½á±»ï¿½ï¿½ï¿½ï¿½)
 				Set<Integer> mappings = getMappings(mipp.left, mipp.right); 
 				// if (mappings.size() == 2)
-				if (existRejectiveMapping(mappings, wantMappings, in)) // ÕâÀï¿ÉÒÔ½áºÏwantmappingÀ´Ïû³ı³åÍ»µÄÇé¿ö
+				if (existRejectiveMapping(mappings, wantMappings, in)) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½wantmappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					mappings.remove(in);
-					for (Integer num : mappings) // Èç¹ûmappings¼¯ºÏ³ıÁËindexÖĞµÄÕâ¸ömapping£¬Ê£ÏÂµÄÕâ¸öÒ»¶¨ÊÇÒª±»¾Ü¾øµÄ¡£
+					for (Integer num : mappings) // ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½indexï¿½Ğµï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Ê£ï¿½Âµï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ü¾ï¿½ï¿½Ä¡ï¿½
 					{
 						Mapping m = maps.get(num);
 						m.setStatus(MappingStatus.INCORRECT);
@@ -820,7 +1017,7 @@ public class RepairMapGraph implements Iterable<Integer>
 
 						int pairs[] = restoreMapping(m);
 						Set<Integer> potentialRemovedMappings = new HashSet<>();
-						// ¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+						// ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 						int incorrectStart = pairs[0];
 						int incorrectEnd = pairs[1];
 						if (aml.getSource().getDataProperties().contains(incorrectStart)&& aml.getTarget().getDataProperties().contains(incorrectEnd)) 
@@ -843,7 +1040,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			}		
 		}
 			
-		//¸üĞÂMIPSs
+		//ï¿½ï¿½ï¿½ï¿½MIPSs
 		for(Integer removedMapping: unWantMappingIndex)
 		{
 			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> relatedMIPP=new HashSet(MapMinimalConflictSet.get(removedMapping));
@@ -856,10 +1053,10 @@ public class RepairMapGraph implements Iterable<Integer>
 				Integer r = iter.next().getKey();			
 				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP = removeAllMIPP(
 						MapMinimalConflictSet.get(r), relatedMIPP);
-				if (leftMIPP.isEmpty()) // Îª¿ÕÔòÖ±½ÓÒÆ³ı
+				if (leftMIPP.isEmpty()) // Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
 				{
 					iter.remove();
-				} else // ¸üĞÂÔ­À´µÄMIPPSetsµÄ´óĞ¡
+				} else // ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
 				{
 					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets = new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(
 							leftMIPP);
@@ -868,7 +1065,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			}			
 		}
 				
-		//ÕıÈ·mappingµÄ±ê¼Ç
+		//ï¿½ï¿½È·mappingï¿½Ä±ï¿½ï¿½
 		Mapping m = a.get(index);
 		m.setStatus(MappingStatus.CORRECT);
 		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.CORRECT);
@@ -877,14 +1074,14 @@ public class RepairMapGraph implements Iterable<Integer>
 		addEdge(source, target);
 		addEdge(target, source);
 		
-		//ÒòÎªmappingÒÑ¾­ÔŞÍ¬ÁË£¬ËùÒÔwantÓëunwantÖĞÉæ¼°mµÄ×Ó¹ØÏµ¶¼ĞèÒªÈ¥µô
+		//ï¿½ï¿½Îªmappingï¿½Ñ¾ï¿½ï¿½ï¿½Í¬ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½wantï¿½ï¿½unwantï¿½ï¿½ï¿½æ¼°mï¿½ï¿½ï¿½Ó¹ï¿½Ïµï¿½ï¿½ï¿½ï¿½ÒªÈ¥ï¿½ï¿½
 		RefreshSet(wantMappings,m);	
 		wantMappings.add(m);
 		RefreshSet(unWantMappings,m);		
 		
-		//Éæ¼°½ÇÉ«µÄÒ»´ÎÌ½Ë÷
+		//ï¿½æ¼°ï¿½ï¿½É«ï¿½ï¿½Ò»ï¿½ï¿½Ì½ï¿½ï¿½
 		int correctpairs[]=restoreMapping(m);													
-		//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+		//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 		int correctStart = correctpairs[0];
 		int correctEnd = correctpairs[1];
 		if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -924,9 +1121,9 @@ public class RepairMapGraph implements Iterable<Integer>
 					tempWantMappings.add(entailedMapping);	
 					flag=true;
 				}
-				//½øÒ»²½ÍÚ¾ò¿ÉÄÜ³åÍ»µÄmappings
-				//³õÊ¼»¯Í¼
-				if(flag==true) //Ò»¸öÎ´±ê¼ÇµÄmapping£¬²»¿ÉÄÜÍ¬Ê±±»Ò»¸öÔŞÍ¬µÄµãÍÆµ¼³öÀ´»òÕßÓëËüÒ»¸öÍÆµ¼³öÃ¬¶ÜµÄµã
+				//ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ú¾ï¿½ï¿½ï¿½Ü³ï¿½Í»ï¿½ï¿½mappings
+				//ï¿½ï¿½Ê¼ï¿½ï¿½Í¼
+				if(flag==true) //Ò»ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½mappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Äµï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½Ã¬ï¿½ÜµÄµï¿½
 					continue;
 				tempGraph.addEdge(start,end);
 				tempGraph.addEdge(end,start);
@@ -935,8 +1132,8 @@ public class RepairMapGraph implements Iterable<Integer>
 					int unwantedSource=unwanted.getSourceId();
 					int unwantedTarget=unwanted.getTargetId();
 										
-					//ÅĞ¶ÏÔö¼ÓmappingµÄÍ¼ĞÎ½á¹¹ÄÜ·ñÍÆµ¼³ö±»¾Ü¾øµÄmappings
-					//Ç¿¾Ü¾øµÄ·½·¨
+					//ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Í¼ï¿½Î½á¹¹ï¿½Ü·ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½mappings
+					//Ç¿ï¿½Ü¾ï¿½ï¿½Ä·ï¿½ï¿½ï¿½
 					/*List<ArrayList<Integer>> unWantedPaths=tempGraph.getPaths(unwantedSource, unwantedTarget);						
 					boolean flag1=entailStrongRejectedMapping(unWantedPaths,i);					
 					unWantedPaths=tempGraph.getPaths(unwantedTarget, unwantedSource);				
@@ -946,7 +1143,7 @@ public class RepairMapGraph implements Iterable<Integer>
 						if(!tempUnwantMappings.contains(tempMap))
 							tempUnwantMappings.add(tempMap);									
 					}*/			
-					//Èõ¾Ü¾øµÄ·½·¨(±éÀú±»¾Ü¾øµÄ¿ªÊ¼µãÓë½áÊøµã£¬Èç¹ûÏà¹ØµÄÂ·¾¶ÖĞ°üº¬Î´±ê¼ÇµÄmapping£¬ÄÇÃ´Ó¦¸Ã±»Èõ¾Ü¾ø)
+					//ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½Ä·ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½Ä¿ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã£¬ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½Â·ï¿½ï¿½ï¿½Ğ°ï¿½ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½mappingï¿½ï¿½ï¿½ï¿½Ã´Ó¦ï¿½Ã±ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½)
 					List<ArrayList<Integer>> unWantedPaths=tempGraph.getPaths(unwantedSource, unwantedTarget);	
 					Mapping entailedMapping1=entailWeakRejectedMapping(unWantedPaths,i,start,end);
 
@@ -978,7 +1175,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			if(temp.getRelationship().equals(MappingRelation.SUBCLASS))
 			{
 				addEdge(source, target);
-				if(existEquivalence(wantMappings,temp))  //Ì½Ë÷µÈ¼ÛµÄÇ±ÔÚÇé¿ö
+				if(existEquivalence(wantMappings,temp))  //Ì½ï¿½ï¿½ï¿½È¼Ûµï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					RefreshSet(wantMappings,temp);
 					temp.setRelationship(MappingRelation.EQUIVALENCE);
@@ -986,7 +1183,7 @@ public class RepairMapGraph implements Iterable<Integer>
 					aml.getAlignment().get(source, target).setStatus(MappingStatus.CORRECT);	
 					
 				    correctpairs=restoreMapping(temp);													
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					correctStart = correctpairs[0];
 					correctEnd = correctpairs[1];
 					if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -1004,16 +1201,16 @@ public class RepairMapGraph implements Iterable<Integer>
 			else if(temp.getRelationship().equals(MappingRelation.SUPERCLASS))
 			{
 				addEdge(target, source);
-				if(existEquivalence(wantMappings,temp))   //Ì½Ë÷Ç±ÔÚµÈ¼ÛµÄÇé¿ö
+				if(existEquivalence(wantMappings,temp))   //Ì½ï¿½ï¿½Ç±ï¿½ÚµÈ¼Ûµï¿½ï¿½ï¿½ï¿½
 				{
 					RefreshSet(wantMappings,temp);
 					temp.setRelationship(MappingRelation.EQUIVALENCE);
 					temp.setStatus(MappingStatus.CORRECT);
 					aml.getAlignment().get(source, target).setStatus(MappingStatus.CORRECT);	
 					
-					//Ç±ÔÚ½ÇÉ«µÄÌí¼Ó
+					//Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					correctpairs=restoreMapping(temp);													
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					correctStart = correctpairs[0];
 					correctEnd = correctpairs[1];
 					if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -1037,9 +1234,9 @@ public class RepairMapGraph implements Iterable<Integer>
 				if(!wantMappings.contains(temp))
 					wantMappings.add(temp);	
 				
-				//Ç±ÔÚ½ÇÉ«µÄÌí¼Ó
+				//Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				correctpairs=restoreMapping(temp);													
-				//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+				//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 				correctStart = correctpairs[0];
 				correctEnd = correctpairs[1];
 				if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -1060,7 +1257,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			target = temp.getTargetId();
 			if(temp.getRelationship().equals(MappingRelation.SUBCLASS))
 			{
-				if(existEquivalence(unWantMappings,temp))  //Ì½Ë÷Ç±ÔÚµÈ¼ÛµÄÇé¿ö
+				if(existEquivalence(unWantMappings,temp))  //Ì½ï¿½ï¿½Ç±ï¿½ÚµÈ¼Ûµï¿½ï¿½ï¿½ï¿½
 				{
 					RefreshSet(unWantMappings,temp);
 					temp.setRelationship(MappingRelation.EQUIVALENCE);				
@@ -1068,11 +1265,11 @@ public class RepairMapGraph implements Iterable<Integer>
 					aml.getAlignment().get(source, target).setStatus(MappingStatus.INCORRECT);	
 					
 					int pairs[]=restoreMapping(temp);												
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					int incorrectStart = pairs[0];
 					int incorrectEnd = pairs[1];
 					
-					//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+					//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 					{			
 						removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unWantMappings);
@@ -1087,7 +1284,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			}
 			else if(temp.getRelationship().equals(MappingRelation.SUPERCLASS))
 			{
-				if(existEquivalence(unWantMappings,temp))  //Ì½Ë÷Ç±ÔÚµÈ¼ÛµÄÇé¿ö
+				if(existEquivalence(unWantMappings,temp))  //Ì½ï¿½ï¿½Ç±ï¿½ÚµÈ¼Ûµï¿½ï¿½ï¿½ï¿½
 				{
 					RefreshSet(unWantMappings,temp);
 					temp.setRelationship(MappingRelation.EQUIVALENCE);				
@@ -1095,11 +1292,11 @@ public class RepairMapGraph implements Iterable<Integer>
 					aml.getAlignment().get(source, target).setStatus(MappingStatus.INCORRECT);	
 					
 					int pairs[]=restoreMapping(temp);												
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					int incorrectStart = pairs[0];
 					int incorrectEnd = pairs[1];
 					
-					//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+					//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 					{			
 						removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unWantMappings);
@@ -1118,13 +1315,13 @@ public class RepairMapGraph implements Iterable<Integer>
 				aml.getAlignment().get(temp.getSourceId(), temp.getTargetId()).setStatus(MappingStatus.INCORRECT);
 				if(!unWantMappings.contains(temp))
 					unWantMappings.add(temp);			
-				//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+				//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				int pairs[]=restoreMapping(temp);												
-				//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+				//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 				int incorrectStart = pairs[0];
 				int incorrectEnd = pairs[1];
 				
-				//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+				//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 				{			
 					removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unWantMappings);
@@ -1139,25 +1336,25 @@ public class RepairMapGraph implements Iterable<Integer>
 	
 	public void strongApprove(int index, ArrayList<Mapping> wantMappings, ArrayList<Mapping> unWantMappings)
 	{
-		//³éÈ¡MIPSsÖĞÎ¨Ò»Óëµ±Ç°ÔŞÍ¬mappingÃ¬¶ÜµÄmapping
+		//ï¿½ï¿½È¡MIPSsï¿½ï¿½Î¨Ò»ï¿½ëµ±Ç°ï¿½ï¿½Í¬mappingÃ¬ï¿½Üµï¿½mapping
 		HashSet<Integer> indexSet=new HashSet<Integer>();
 		if(aml.getAlignment().getPropertyMap().containsKey(index))
 			indexSet.addAll(aml.getAlignment().getPropertyMap().get(index));
 		else
 			indexSet.add(index);
 		HashSet<Integer> unWantMappingIndex=new HashSet<Integer>();
-		indexSet.retainAll(MapMinimalConflictSet.keySet()); //ÕâÑù¿ÉÒÔ±£Ö¤
+		indexSet.retainAll(MapMinimalConflictSet.keySet()); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½Ö¤
 		for(Integer in:indexSet)
 		{
 			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet = new HashSet(MapMinimalConflictSet.get(in));
 			for (Pair<ArrayList<Integer>, ArrayList<Integer>> mipp : MIPPSet) {
-				//Í¨¹ıÂ·¾¶À´»ñÈ¡mappings(ÕâÀïµÄmappingÓ¦¸Ã¾ùÊÇÉĞÎ´±ê¼ÇµÄ,ÒòÎªÎŞÂÛÖ´ĞĞapprove»òÕßreject²Ù×÷£¬mappingÏàÓ¦µÄMIPS¶¼»á±»Ïû³ı)
+				//Í¨ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡mappings(ï¿½ï¿½ï¿½ï¿½ï¿½mappingÓ¦ï¿½Ã¾ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½,ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½approveï¿½ï¿½ï¿½ï¿½rejectï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Ó¦ï¿½ï¿½MIPSï¿½ï¿½ï¿½á±»ï¿½ï¿½ï¿½ï¿½)
 				Set<Integer> mappings = getMappings(mipp.left, mipp.right); 
 				// if (mappings.size() == 2)
-				if (existRejectiveMapping(mappings, wantMappings, in)) // ÕâÀï¿ÉÒÔ½áºÏwantmappingÀ´Ïû³ı³åÍ»µÄÇé¿ö
+				if (existRejectiveMapping(mappings, wantMappings, in)) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½wantmappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					mappings.remove(in);
-					for (Integer num : mappings) // Èç¹ûmappings¼¯ºÏ³ıÁËindexÖĞµÄÕâ¸ömapping£¬Ê£ÏÂµÄÕâ¸öÒ»¶¨ÊÇÒª±»¾Ü¾øµÄ¡£
+					for (Integer num : mappings) // ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½indexï¿½Ğµï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Ê£ï¿½Âµï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ü¾ï¿½ï¿½Ä¡ï¿½
 					{
 						Mapping m = maps.get(num);
 						m.setStatus(MappingStatus.INCORRECT);
@@ -1167,7 +1364,7 @@ public class RepairMapGraph implements Iterable<Integer>
 
 						int pairs[] = restoreMapping(m);
 						Set<Integer> potentialRemovedMappings = new HashSet<>();
-						// ¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+						// ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 						int incorrectStart = pairs[0];
 						int incorrectEnd = pairs[1];
 						if (aml.getSource().getDataProperties().contains(incorrectStart)&& aml.getTarget().getDataProperties().contains(incorrectEnd)) 
@@ -1190,7 +1387,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			}		
 		}
 			
-		//¸üĞÂMIPSs
+		//ï¿½ï¿½ï¿½ï¿½MIPSs
 		for(Integer removedMapping: unWantMappingIndex)
 		{
 			if(!MapMinimalConflictSet.keySet().contains(removedMapping))
@@ -1205,10 +1402,10 @@ public class RepairMapGraph implements Iterable<Integer>
 				Integer r = iter.next().getKey();			
 				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP = removeAllMIPP(
 						MapMinimalConflictSet.get(r), relatedMIPP);
-				if (leftMIPP.isEmpty()) // Îª¿ÕÔòÖ±½ÓÒÆ³ı
+				if (leftMIPP.isEmpty()) // Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
 				{
 					iter.remove();
-				} else // ¸üĞÂÔ­À´µÄMIPPSetsµÄ´óĞ¡
+				} else // ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
 				{
 					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets = new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(
 							leftMIPP);
@@ -1217,7 +1414,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			}			
 		}
 				
-		//ÕıÈ·mappingµÄ±ê¼Ç
+		//ï¿½ï¿½È·mappingï¿½Ä±ï¿½ï¿½
 		Mapping m = a.get(index);
 		m.setStatus(MappingStatus.CORRECT);
 		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.CORRECT);
@@ -1232,14 +1429,14 @@ public class RepairMapGraph implements Iterable<Integer>
 			addEdge(target, source);
 		}
 		
-		//ÒòÎªmappingÒÑ¾­ÔŞÍ¬ÁË£¬ËùÒÔwantÓëunwantÖĞÉæ¼°mµÄ×Ó¹ØÏµ¶¼ĞèÒªÈ¥µô
+		//ï¿½ï¿½Îªmappingï¿½Ñ¾ï¿½ï¿½ï¿½Í¬ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½wantï¿½ï¿½unwantï¿½ï¿½ï¿½æ¼°mï¿½ï¿½ï¿½Ó¹ï¿½Ïµï¿½ï¿½ï¿½ï¿½ÒªÈ¥ï¿½ï¿½
 		RefreshSet(wantMappings,m);	
 		wantMappings.add(m);
 		RefreshSet(unWantMappings,m);		
 		
-		//Éæ¼°½ÇÉ«µÄÒ»´ÎÌ½Ë÷
+		//ï¿½æ¼°ï¿½ï¿½É«ï¿½ï¿½Ò»ï¿½ï¿½Ì½ï¿½ï¿½
 		int correctpairs[]=restoreMapping(m);													
-		//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+		//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 		int correctStart = correctpairs[0];
 		int correctEnd = correctpairs[1];
 		if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -1287,8 +1484,8 @@ public class RepairMapGraph implements Iterable<Integer>
 					}
 				}
 				
-				//½øÒ»²½ÍÚ¾ò¿ÉÄÜ³åÍ»µÄmappings
-				if(flag==true) //Ò»¸öÎ´±ê¼ÇµÄmapping£¬²»¿ÉÄÜÍ¬Ê±±»Ò»¸öÔŞÍ¬µÄµãÍÆµ¼³öÀ´»òÕßÓëËüÒ»¸öÍÆµ¼³öÃ¬¶ÜµÄµã
+				//ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ú¾ï¿½ï¿½ï¿½Ü³ï¿½Í»ï¿½ï¿½mappings
+				if(flag==true) //Ò»ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½mappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Äµï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½Ã¬ï¿½ÜµÄµï¿½
 					continue;
 				if(tempMap.getRelationship().equals(MappingRelation.SUBCLASS)||tempMap.getRelationship().equals(MappingRelation.EQUIVALENCE))
 				{	
@@ -1304,8 +1501,8 @@ public class RepairMapGraph implements Iterable<Integer>
 					int unwantedSource=unwanted.getSourceId();
 					int unwantedTarget=unwanted.getTargetId();
 										
-					//ÅĞ¶ÏÔö¼ÓmappingµÄÍ¼ĞÎ½á¹¹ÄÜ·ñÍÆµ¼³ö±»¾Ü¾øµÄmappings
-					//Ç¿¾Ü¾øµÄ·½·¨
+					//ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Í¼ï¿½Î½á¹¹ï¿½Ü·ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½mappings
+					//Ç¿ï¿½Ü¾ï¿½ï¿½Ä·ï¿½ï¿½ï¿½
 					List<ArrayList<Integer>> unWantedPaths=tempGraph.getPaths(unwantedSource, unwantedTarget);						
 					boolean flag1=entailStrongRejectedMapping(unWantedPaths,i);	
 					//boolean flag1=entailStrongRejectedMappingExactly(unWantedPaths,i,tempMap);	
@@ -1338,14 +1535,14 @@ public class RepairMapGraph implements Iterable<Integer>
 			int id=a.getIndexBidirectional(source, target);
 			/*System.out.println(a.get(id).getRelationship());
 			System.out.println(temp.getRelationship());*/
-			if(a.get(id).getRelationship().equals(temp.getRelationship())) //¿¼ÂÇµ½°üº¬¹ØÏµµÄÇé¿ö(¼ÙÉè½ÇÉ«ÖĞ²»´æÔÚ¸Ã°üº¬µÄÇé¿ö)
+			if(a.get(id).getRelationship().equals(temp.getRelationship())) //ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½Ğ²ï¿½ï¿½ï¿½ï¿½Ú¸Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 			{
 				RefreshSet(wantMappings,temp);
 				temp.setStatus(MappingStatus.CORRECT);
 				aml.getAlignment().get(source, target).setStatus(MappingStatus.CORRECT);	
 				if(!wantMappings.contains(temp))
 					wantMappings.add(temp);	
-				//Ìí¼Ó±ßµÄ²Ù×÷(µ«ÊÇµÈ¼ÛµÄÇé¿öÊÇ²»»á·¢ÉúµÄ)
+				//ï¿½ï¿½Ó±ßµÄ²ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ÇµÈ¼Ûµï¿½ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½á·¢ï¿½ï¿½ï¿½ï¿½)
 				if(temp.getRelationship().equals(MappingRelation.SUBCLASS))
 					addEdge(source, target);
 				else if(temp.getRelationship().equals(MappingRelation.SUPERCLASS))
@@ -1356,7 +1553,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			if(temp.getRelationship().equals(MappingRelation.SUBCLASS))
 			{
 				addEdge(source, target);
-				if(existEquivalence(wantMappings,temp))  //Ì½Ë÷µÈ¼ÛµÄÇ±ÔÚÇé¿ö
+				if(existEquivalence(wantMappings,temp))  //Ì½ï¿½ï¿½ï¿½È¼Ûµï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					RefreshSet(wantMappings,temp);
 					temp.setRelationship(MappingRelation.EQUIVALENCE);
@@ -1364,7 +1561,7 @@ public class RepairMapGraph implements Iterable<Integer>
 					aml.getAlignment().get(source, target).setStatus(MappingStatus.CORRECT);	
 					
 				    correctpairs=restoreMapping(temp);													
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					correctStart = correctpairs[0];
 					correctEnd = correctpairs[1];
 					if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -1382,16 +1579,16 @@ public class RepairMapGraph implements Iterable<Integer>
 			else if(temp.getRelationship().equals(MappingRelation.SUPERCLASS))
 			{
 				addEdge(target, source);
-				if(existEquivalence(wantMappings,temp))   //Ì½Ë÷Ç±ÔÚµÈ¼ÛµÄÇé¿ö
+				if(existEquivalence(wantMappings,temp))   //Ì½ï¿½ï¿½Ç±ï¿½ÚµÈ¼Ûµï¿½ï¿½ï¿½ï¿½
 				{
 					RefreshSet(wantMappings,temp);
 					temp.setRelationship(MappingRelation.EQUIVALENCE);
 					temp.setStatus(MappingStatus.CORRECT);
 					aml.getAlignment().get(source, target).setStatus(MappingStatus.CORRECT);	
 					
-					//Ç±ÔÚ½ÇÉ«µÄÌí¼Ó
+					//Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					correctpairs=restoreMapping(temp);													
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					correctStart = correctpairs[0];
 					correctEnd = correctpairs[1];
 					if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -1415,9 +1612,9 @@ public class RepairMapGraph implements Iterable<Integer>
 				if(!wantMappings.contains(temp))
 					wantMappings.add(temp);	
 				
-				//Ç±ÔÚ½ÇÉ«µÄÌí¼Ó
+				//Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				correctpairs=restoreMapping(temp);													
-				//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+				//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 				correctStart = correctpairs[0];
 				correctEnd = correctpairs[1];
 				if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -1432,12 +1629,12 @@ public class RepairMapGraph implements Iterable<Integer>
 		}
 		
 		
-		for(Mapping temp: tempUnwantMappings)  //µ«ÊÇ²¢²»ÊÇµü´úµÄ·½·¨
+		for(Mapping temp: tempUnwantMappings)  //ï¿½ï¿½ï¿½Ç²ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½
 		{
 			source = temp.getSourceId();
 			target = temp.getTargetId();
 						
-			//Òş»ŞÍÆµ¼µÄmappingsÈç¹ûÎ´±ê¼Ç¶¼Ó¦¸Ã±»¾Ü¾ø
+			//ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½Î´ï¿½ï¿½Ç¶ï¿½Ó¦ï¿½Ã±ï¿½ï¿½Ü¾ï¿½
 			RefreshSet(wantMappings,temp);	
 			if(temp.getRelationship().equals(MappingRelation.SUBCLASS)||temp.getRelationship().equals(MappingRelation.EQUIVALENCE))
 			{
@@ -1453,13 +1650,13 @@ public class RepairMapGraph implements Iterable<Integer>
 			RefreshSet(unWantMappings,temp);
 			if (!unWantMappings.contains(temp))
 				unWantMappings.add(temp);
-			// Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+			// ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 			int pairs[] = restoreMapping(temp);
-			// ¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+			// ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 			int incorrectStart = pairs[0];
 			int incorrectEnd = pairs[1];
 
-			// Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+			// ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 			if (aml.getSource().getDataProperties().contains(incorrectStart)&& aml.getTarget().getDataProperties().contains(incorrectEnd))
 			{
 				removeDataPropety4MapppingGraph(incorrectStart, incorrectEnd,wantMappings, unWantMappings);
@@ -1471,7 +1668,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		}	
 	}
 	
-	// ¾Ü¾øµÄ»°£¬ĞèÒªÕë¶ÔÄÇĞ©µ¼ÖÂindexMappingµÄÇé¿ö½øĞĞ¸üĞÂ
+	// ï¿½Ü¾ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ğ©ï¿½ï¿½ï¿½ï¿½indexMappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¸ï¿½ï¿½ï¿½
 	public void strongReject(int index,ArrayList<Mapping> wantMappings,ArrayList<Mapping> unwantMappings)
 	{
 		HashSet<Integer> indexSet=new HashSet<Integer>();
@@ -1483,7 +1680,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		for(Integer in: indexSet)
 		{
 			System.out.println("The number of related Minimal conflict sets is "+ MapMinimalConflictSet.get(in).size());
-			// ¸üĞÂÒ»±éMIPSs,µ«¼´Ê¹¾Ü¾øÁË¸Ämapping£¬Ò²²»ÄÜ±£Ö¤ÁíÍâÒ»¸ömappingÒ»¶¨ÊÇÕıÈ·»òÕß´íÎóµÄ£¬»¹ĞèÒª×¨¼ÒÀ´ÅĞ¶Ï
+			// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½MIPSs,ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ü¾ï¿½ï¿½Ë¸ï¿½mappingï¿½ï¿½Ò²ï¿½ï¿½ï¿½Ü±ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½mappingÒ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Òª×¨ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½
 			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet = new HashSet(MapMinimalConflictSet.get(in));
 			MinimalConflictSet.removeAll(MapMinimalConflictSet.get(in));
 			MapMinimalConflictSet.remove(in);
@@ -1493,11 +1690,11 @@ public class RepairMapGraph implements Iterable<Integer>
 				Integer r = iter.next().getKey();
 				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP = removeAllMIPP(
 						MapMinimalConflictSet.get(r), MIPPSet);
-				if (leftMIPP.isEmpty()) // Îª¿ÕÔòÖ±½ÓÒÆ³ı
+				if (leftMIPP.isEmpty()) // Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
 				{
 					// MapMinimalConflictSet.remove(r);
 					iter.remove();
-				} else // ¸üĞÂÔ­À´µÄMIPPSetsµÄ´óĞ¡
+				} else // ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
 				{
 					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets = new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(
 							leftMIPP);
@@ -1509,7 +1706,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		Mapping m = a.get(index);
 		m.setStatus(MappingStatus.INCORRECT);
 		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.INCORRECT);	
-		//ÒòÎªmappingÒÑ¾­¾Ü¾øÁË£¬ËùÒÔ×Ó¹ØÏµĞèÒªÈ¥³ı(×¢ÒâwantMappingÀïµÄÖµÊÇÎ´±ê¼ÇµÄ)
+		//ï¿½ï¿½Îªmappingï¿½Ñ¾ï¿½ï¿½Ü¾ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¹ï¿½Ïµï¿½ï¿½ÒªÈ¥ï¿½ï¿½(×¢ï¿½ï¿½wantMappingï¿½ï¿½ï¿½Öµï¿½ï¿½Î´ï¿½ï¿½Çµï¿½)
 		
 		RefreshSet(wantMappings,m);		
 		RefreshSet(unwantMappings,m);
@@ -1520,11 +1717,11 @@ public class RepairMapGraph implements Iterable<Integer>
 		int end = m.getTargetId();			
 			
 		int pairs[]=restoreMapping(m);												
-		//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+		//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 		int incorrectStart = pairs[0];
 		int incorrectEnd = pairs[1];
 		
-		//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+		//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 		if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 		{			
 			removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unwantMappings);
@@ -1537,7 +1734,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		Graph tempGraph=new Graph();
 		tempGraph.init(originalMap);
 		
-		//²¢ÇÒ¹ØÁªµÄÍ¼Èç¹û´æÔÚÒ²ĞèÒªÒÆ³ı	
+		//ï¿½ï¿½ï¿½Ò¹ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½Òªï¿½Æ³ï¿½	
 		if(m.getRelationship().equals(MappingRelation.SUBCLASS)||m.getRelationship().equals(MappingRelation.EQUIVALENCE))
 		{
 			tempGraph.removeEdge(start,end);
@@ -1556,7 +1753,7 @@ public class RepairMapGraph implements Iterable<Integer>
 				int target=tempMap.getTargetId();
 				
 				boolean flag1=false,flag2=false;
-				//ÁÙÊ±Ôö¼Ó2Ìõ´ı¼ì²âµÄ±ß,ÅĞ¶ÏÔö¼ÓmappingµÄÍ¼ĞÎ½á¹¹ÄÜ·ñÍÆµ¼³ö±»¾Ü¾øµÄmappings
+				//ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½,ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Í¼ï¿½Î½á¹¹ï¿½Ü·ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½mappings
 				if(tempMap.getRelationship().equals(MappingRelation.SUBCLASS)||tempMap.getRelationship().equals(MappingRelation.EQUIVALENCE))
 				{
 					tempGraph.addEdge(source,target);
@@ -1578,11 +1775,11 @@ public class RepairMapGraph implements Iterable<Integer>
 						unwantMappings.add(tempMap);
 					
 				    pairs=restoreMapping(tempMap);												
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 				    incorrectStart = pairs[0];
 				    incorrectEnd = pairs[1];
 					
-					//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+					//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 					{			
 						removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unwantMappings);
@@ -1608,25 +1805,25 @@ public class RepairMapGraph implements Iterable<Integer>
 	
 	public void strongApproveComplete(int index, ArrayList<Mapping> wantMappings, ArrayList<Mapping> unWantMappings)
 	{
-		//³éÈ¡MIPSsÖĞÎ¨Ò»Óëµ±Ç°ÔŞÍ¬mappingÃ¬¶ÜµÄmapping
+		//ï¿½ï¿½È¡MIPSsï¿½ï¿½Î¨Ò»ï¿½ëµ±Ç°ï¿½ï¿½Í¬mappingÃ¬ï¿½Üµï¿½mapping
 		HashSet<Integer> indexSet=new HashSet<Integer>();
 		if(aml.getAlignment().getPropertyMap().containsKey(index))
 			indexSet.addAll(aml.getAlignment().getPropertyMap().get(index));
 		else
 			indexSet.add(index);
 		HashSet<Integer> unWantMappingIndex=new HashSet<Integer>();
-		indexSet.retainAll(MapMinimalConflictSet.keySet()); //ÕâÑù¿ÉÒÔ±£Ö¤
+		indexSet.retainAll(MapMinimalConflictSet.keySet()); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½Ö¤
 		for(Integer in:indexSet)
 		{
 			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet = new HashSet(MapMinimalConflictSet.get(in));
 			for (Pair<ArrayList<Integer>, ArrayList<Integer>> mipp : MIPPSet) {
-				//Í¨¹ıÂ·¾¶À´»ñÈ¡mappings(ÕâÀïµÄmappingÓ¦¸Ã¾ùÊÇÉĞÎ´±ê¼ÇµÄ,ÒòÎªÎŞÂÛÖ´ĞĞapprove»òÕßreject²Ù×÷£¬mappingÏàÓ¦µÄMIPS¶¼»á±»Ïû³ı)
+				//Í¨ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡mappings(ï¿½ï¿½ï¿½ï¿½ï¿½mappingÓ¦ï¿½Ã¾ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½,ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½approveï¿½ï¿½ï¿½ï¿½rejectï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Ó¦ï¿½ï¿½MIPSï¿½ï¿½ï¿½á±»ï¿½ï¿½ï¿½ï¿½)
 				Set<Integer> mappings = getMappings(mipp.left, mipp.right); 
 				// if (mappings.size() == 2)
-				if (existRejectiveMapping(mappings, wantMappings, in)) // ÕâÀï¿ÉÒÔ½áºÏwantmappingÀ´Ïû³ı³åÍ»µÄÇé¿ö
+				if (existRejectiveMapping(mappings, wantMappings, in)) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½wantmappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					mappings.remove(in);
-					for (Integer num : mappings) // Èç¹ûmappings¼¯ºÏ³ıÁËindexÖĞµÄÕâ¸ömapping£¬Ê£ÏÂµÄÕâ¸öÒ»¶¨ÊÇÒª±»¾Ü¾øµÄ¡£
+					for (Integer num : mappings) // ï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½indexï¿½Ğµï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Ê£ï¿½Âµï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ü¾ï¿½ï¿½Ä¡ï¿½
 					{
 						Mapping m = maps.get(num);
 						m.setStatus(MappingStatus.INCORRECT);
@@ -1636,7 +1833,7 @@ public class RepairMapGraph implements Iterable<Integer>
 
 						int pairs[] = restoreMapping(m);
 						Set<Integer> potentialRemovedMappings = new HashSet<>();
-						// ¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+						// ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 						int incorrectStart = pairs[0];
 						int incorrectEnd = pairs[1];
 						if (aml.getSource().getDataProperties().contains(incorrectStart)&& aml.getTarget().getDataProperties().contains(incorrectEnd)) 
@@ -1659,7 +1856,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			}		
 		}
 			
-		//¸üĞÂMIPSs
+		//ï¿½ï¿½ï¿½ï¿½MIPSs
 		for(Integer removedMapping: unWantMappingIndex)
 		{
 			if(!MapMinimalConflictSet.keySet().contains(removedMapping))
@@ -1674,10 +1871,10 @@ public class RepairMapGraph implements Iterable<Integer>
 				Integer r = iter.next().getKey();			
 				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP = removeAllMIPP(
 						MapMinimalConflictSet.get(r), relatedMIPP);
-				if (leftMIPP.isEmpty()) // Îª¿ÕÔòÖ±½ÓÒÆ³ı
+				if (leftMIPP.isEmpty()) // Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
 				{
 					iter.remove();
-				} else // ¸üĞÂÔ­À´µÄMIPPSetsµÄ´óĞ¡
+				} else // ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
 				{
 					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets = new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(
 							leftMIPP);
@@ -1686,7 +1883,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			}			
 		}
 				
-		//ÕıÈ·mappingµÄ±ê¼Ç
+		//ï¿½ï¿½È·mappingï¿½Ä±ï¿½ï¿½
 		Mapping m = a.get(index);
 		m.setStatus(MappingStatus.CORRECT);
 		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.CORRECT);
@@ -1701,14 +1898,14 @@ public class RepairMapGraph implements Iterable<Integer>
 			addEdge(target, source);
 		}
 		
-		//ÒòÎªmappingÒÑ¾­ÔŞÍ¬ÁË£¬ËùÒÔwantÓëunwantÖĞÉæ¼°mµÄ×Ó¹ØÏµ¶¼ĞèÒªÈ¥µô
+		//ï¿½ï¿½Îªmappingï¿½Ñ¾ï¿½ï¿½ï¿½Í¬ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½wantï¿½ï¿½unwantï¿½ï¿½ï¿½æ¼°mï¿½ï¿½ï¿½Ó¹ï¿½Ïµï¿½ï¿½ï¿½ï¿½ÒªÈ¥ï¿½ï¿½
 		RefreshSet(wantMappings,m);	
 		wantMappings.add(m);
 		RefreshSet(unWantMappings,m);		
 		
-		//Éæ¼°½ÇÉ«µÄÒ»´ÎÌ½Ë÷
+		//ï¿½æ¼°ï¿½ï¿½É«ï¿½ï¿½Ò»ï¿½ï¿½Ì½ï¿½ï¿½
 		int correctpairs[]=restoreMapping(m);													
-		//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+		//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 		int correctStart = correctpairs[0];
 		int correctEnd = correctpairs[1];
 		if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -1756,8 +1953,8 @@ public class RepairMapGraph implements Iterable<Integer>
 					}
 				}
 				
-				//½øÒ»²½ÍÚ¾ò¿ÉÄÜ³åÍ»µÄmappings
-				if(flag==true) //Ò»¸öÎ´±ê¼ÇµÄmapping£¬²»¿ÉÄÜÍ¬Ê±±»Ò»¸öÔŞÍ¬µÄµãÍÆµ¼³öÀ´»òÕßÓëËüÒ»¸öÍÆµ¼³öÃ¬¶ÜµÄµã
+				//ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ú¾ï¿½ï¿½ï¿½Ü³ï¿½Í»ï¿½ï¿½mappings
+				if(flag==true) //Ò»ï¿½ï¿½Î´ï¿½ï¿½Çµï¿½mappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Äµï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½Ã¬ï¿½ÜµÄµï¿½
 					continue;
 				if(tempMap.getRelationship().equals(MappingRelation.SUBCLASS)||tempMap.getRelationship().equals(MappingRelation.EQUIVALENCE))
 				{	
@@ -1773,8 +1970,8 @@ public class RepairMapGraph implements Iterable<Integer>
 					int unwantedSource=unwanted.getSourceId();
 					int unwantedTarget=unwanted.getTargetId();
 										
-					//ÅĞ¶ÏÔö¼ÓmappingµÄÍ¼ĞÎ½á¹¹ÄÜ·ñÍÆµ¼³ö±»¾Ü¾øµÄmappings
-					//Ç¿¾Ü¾øµÄ·½·¨
+					//ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Í¼ï¿½Î½á¹¹ï¿½Ü·ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½mappings
+					//Ç¿ï¿½Ü¾ï¿½ï¿½Ä·ï¿½ï¿½ï¿½
 					List<ArrayList<Integer>> unWantedPaths=tempGraph.getPaths(unwantedSource, unwantedTarget);						
 					boolean flag1=entailStrongRejectedMapping(unWantedPaths,i);	
 					//boolean flag1=entailStrongRejectedMappingExactly(unWantedPaths,i,tempMap);	
@@ -1807,26 +2004,26 @@ public class RepairMapGraph implements Iterable<Integer>
 			int id=a.getIndexBidirectional(source, target);
 			/*System.out.println(a.get(id).getRelationship());
 			System.out.println(temp.getRelationship());*/
-			if(a.get(id).getRelationship().equals(temp.getRelationship())) //¿¼ÂÇµ½°üº¬¹ØÏµµÄÇé¿ö(¼ÙÉè½ÇÉ«ÖĞ²»´æÔÚ¸Ã°üº¬µÄÇé¿ö)
+			if(a.get(id).getRelationship().equals(temp.getRelationship())) //ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½Ğ²ï¿½ï¿½ï¿½ï¿½Ú¸Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 			{
 				RefreshSet(wantMappings,temp);
 				temp.setStatus(MappingStatus.CORRECT);
 				aml.getAlignment().get(source, target).setStatus(MappingStatus.CORRECT);	
 				if(!wantMappings.contains(temp))
 					wantMappings.add(temp);	
-				//Ìí¼Ó±ßµÄ²Ù×÷(µ«ÊÇµÈ¼ÛµÄÇé¿öÊÇ²»»á·¢ÉúµÄ)
+				//ï¿½ï¿½Ó±ßµÄ²ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ÇµÈ¼Ûµï¿½ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½á·¢ï¿½ï¿½ï¿½ï¿½)
 				if(temp.getRelationship().equals(MappingRelation.SUBCLASS))
 					addEdge(source, target);
 				else if(temp.getRelationship().equals(MappingRelation.SUPERCLASS))
 					addEdge(target, source);	
-				strongApproveComplete(id,wantMappings,unWantMappings); //Ô­ÀíÉÏÓ¦¸ÃÊÇÕâÑùµÄ
+				//strongApproveComplete(id,wantMappings,unWantMappings); //Ô­ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				continue;
 			}
 			
 			if(temp.getRelationship().equals(MappingRelation.SUBCLASS))
 			{
 				addEdge(source, target);
-				if(existEquivalence(wantMappings,temp))  //Ì½Ë÷µÈ¼ÛµÄÇ±ÔÚÇé¿ö
+				if(existEquivalence(wantMappings,temp))  //Ì½ï¿½ï¿½ï¿½È¼Ûµï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½
 				{
 					RefreshSet(wantMappings,temp);
 					temp.setRelationship(MappingRelation.EQUIVALENCE);
@@ -1834,7 +2031,7 @@ public class RepairMapGraph implements Iterable<Integer>
 					aml.getAlignment().get(source, target).setStatus(MappingStatus.CORRECT);	
 					
 				    correctpairs=restoreMapping(temp);													
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					correctStart = correctpairs[0];
 					correctEnd = correctpairs[1];
 					if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -1845,7 +2042,7 @@ public class RepairMapGraph implements Iterable<Integer>
 					{
 						extendObjectPropety4MapppingGraph(correctStart,correctEnd,wantMappings,unWantMappings);
 					}		
-					strongApproveComplete(id,wantMappings,unWantMappings); //Ô­ÀíÉÏÓ¦¸ÃÊÇÕâÑùµÄ
+					//strongApproveComplete(id,wantMappings,unWantMappings); //Ô­ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				}
 				if(!wantMappings.contains(temp))
 					wantMappings.add(temp);			
@@ -1853,16 +2050,16 @@ public class RepairMapGraph implements Iterable<Integer>
 			else if(temp.getRelationship().equals(MappingRelation.SUPERCLASS))
 			{
 				addEdge(target, source);
-				if(existEquivalence(wantMappings,temp))   //Ì½Ë÷Ç±ÔÚµÈ¼ÛµÄÇé¿ö
+				if(existEquivalence(wantMappings,temp))   //Ì½ï¿½ï¿½Ç±ï¿½ÚµÈ¼Ûµï¿½ï¿½ï¿½ï¿½
 				{
 					RefreshSet(wantMappings,temp);
 					temp.setRelationship(MappingRelation.EQUIVALENCE);
 					temp.setStatus(MappingStatus.CORRECT);
 					aml.getAlignment().get(source, target).setStatus(MappingStatus.CORRECT);	
 					
-					//Ç±ÔÚ½ÇÉ«µÄÌí¼Ó
+					//Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					correctpairs=restoreMapping(temp);													
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					correctStart = correctpairs[0];
 					correctEnd = correctpairs[1];
 					if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -1873,7 +2070,7 @@ public class RepairMapGraph implements Iterable<Integer>
 					{
 						extendObjectPropety4MapppingGraph(correctStart,correctEnd,wantMappings,unWantMappings);
 					}
-					strongApproveComplete(id,wantMappings,unWantMappings); //Ô­ÀíÉÏÓ¦¸ÃÊÇÕâÑùµÄ
+					//strongApproveComplete(id,wantMappings,unWantMappings); //Ô­ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				}
 				if(!wantMappings.contains(temp))
 					wantMappings.add(temp);	
@@ -1887,9 +2084,9 @@ public class RepairMapGraph implements Iterable<Integer>
 				if(!wantMappings.contains(temp))
 					wantMappings.add(temp);	
 				
-				//Ç±ÔÚ½ÇÉ«µÄÌí¼Ó
+				//Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				correctpairs=restoreMapping(temp);													
-				//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+				//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 				correctStart = correctpairs[0];
 				correctEnd = correctpairs[1];
 				if(aml.getSource().getDataProperties().contains(correctStart)&&aml.getTarget().getDataProperties().contains(correctEnd))
@@ -1901,17 +2098,17 @@ public class RepairMapGraph implements Iterable<Integer>
 					extendObjectPropety4MapppingGraph(correctStart,correctEnd,wantMappings,unWantMappings);
 				}
 				
-				strongApproveComplete(id,wantMappings,unWantMappings); //Ô­ÀíÉÏÓ¦¸ÃÊÇÕâÑùµÄ
+				//strongApproveComplete(id,wantMappings,unWantMappings); //Ô­ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			}
 		}
 		
 		
-		for(Mapping temp: tempUnwantMappings)  //µ«ÊÇ²¢²»ÊÇµü´úµÄ·½·¨
+		for(Mapping temp: tempUnwantMappings)  //ï¿½ï¿½ï¿½Ç²ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½
 		{
 			source = temp.getSourceId();
 			target = temp.getTargetId();
 						
-			//Òş»ŞÍÆµ¼µÄmappingsÈç¹ûÎ´±ê¼Ç¶¼Ó¦¸Ã±»¾Ü¾ø
+			//ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½mappingsï¿½ï¿½ï¿½Î´ï¿½ï¿½Ç¶ï¿½Ó¦ï¿½Ã±ï¿½ï¿½Ü¾ï¿½
 			RefreshSet(wantMappings,temp);	
 			if(temp.getRelationship().equals(MappingRelation.SUBCLASS)||temp.getRelationship().equals(MappingRelation.EQUIVALENCE))
 			{
@@ -1927,13 +2124,13 @@ public class RepairMapGraph implements Iterable<Integer>
 			RefreshSet(unWantMappings,temp);
 			if (!unWantMappings.contains(temp))
 				unWantMappings.add(temp);
-			// Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+			// ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 			int pairs[] = restoreMapping(temp);
-			// ¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+			// ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 			int incorrectStart = pairs[0];
 			int incorrectEnd = pairs[1];
 
-			// Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+			// ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 			if (aml.getSource().getDataProperties().contains(incorrectStart)&& aml.getTarget().getDataProperties().contains(incorrectEnd))
 			{
 				removeDataPropety4MapppingGraph(incorrectStart, incorrectEnd,wantMappings, unWantMappings);
@@ -1942,13 +2139,15 @@ public class RepairMapGraph implements Iterable<Integer>
 			{
 				removeObjectPropety4MapppingGraph(incorrectStart, incorrectEnd,wantMappings, unWantMappings);
 			}		
-			//Ö´ĞĞµİ¹é²Ù×÷
+			//Ö´ï¿½Ğµİ¹ï¿½ï¿½ï¿½ï¿½
 			int extendIndex=a.getIndexBidirectional(source, target);
-			strongRejectComplete(extendIndex,wantMappings,unWantMappings);
+			//strongRejectComplete(extendIndex,wantMappings,unWantMappings);
 		}	
 	}
 	
-	// ¾Ü¾øµÄ»°£¬ĞèÒªÕë¶ÔÄÇĞ©µ¼ÖÂindexMappingµÄÇé¿ö½øĞĞ¸üĞÂ
+	
+	
+	// ï¿½Ü¾ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ğ©ï¿½ï¿½ï¿½ï¿½indexMappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¸ï¿½ï¿½ï¿½
 	public void strongRejectComplete(int index,ArrayList<Mapping> wantMappings,ArrayList<Mapping> unwantMappings)
 	{
 		HashSet<Integer> indexSet=new HashSet<Integer>();
@@ -1960,7 +2159,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		for(Integer in: indexSet)
 		{
 			System.out.println("The number of related Minimal conflict sets is "+ MapMinimalConflictSet.get(in).size());
-			// ¸üĞÂÒ»±éMIPSs,µ«¼´Ê¹¾Ü¾øÁË¸Ämapping£¬Ò²²»ÄÜ±£Ö¤ÁíÍâÒ»¸ömappingÒ»¶¨ÊÇÕıÈ·»òÕß´íÎóµÄ£¬»¹ĞèÒª×¨¼ÒÀ´ÅĞ¶Ï
+			// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½MIPSs,ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ü¾ï¿½ï¿½Ë¸ï¿½mappingï¿½ï¿½Ò²ï¿½ï¿½ï¿½Ü±ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½mappingÒ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Òª×¨ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½
 			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet = new HashSet(MapMinimalConflictSet.get(in));
 			MinimalConflictSet.removeAll(MapMinimalConflictSet.get(in));
 			MapMinimalConflictSet.remove(in);
@@ -1970,11 +2169,11 @@ public class RepairMapGraph implements Iterable<Integer>
 				Integer r = iter.next().getKey();
 				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP = removeAllMIPP(
 						MapMinimalConflictSet.get(r), MIPPSet);
-				if (leftMIPP.isEmpty()) // Îª¿ÕÔòÖ±½ÓÒÆ³ı
+				if (leftMIPP.isEmpty()) // Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
 				{
 					// MapMinimalConflictSet.remove(r);
 					iter.remove();
-				} else // ¸üĞÂÔ­À´µÄMIPPSetsµÄ´óĞ¡
+				} else // ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
 				{
 					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets = new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(
 							leftMIPP);
@@ -1986,7 +2185,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		Mapping m = a.get(index);
 		m.setStatus(MappingStatus.INCORRECT);
 		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.INCORRECT);	
-		//ÒòÎªmappingÒÑ¾­¾Ü¾øÁË£¬ËùÒÔ×Ó¹ØÏµĞèÒªÈ¥³ı(×¢ÒâwantMappingÀïµÄÖµÊÇÎ´±ê¼ÇµÄ)
+		//ï¿½ï¿½Îªmappingï¿½Ñ¾ï¿½ï¿½Ü¾ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¹ï¿½Ïµï¿½ï¿½ÒªÈ¥ï¿½ï¿½(×¢ï¿½ï¿½wantMappingï¿½ï¿½ï¿½Öµï¿½ï¿½Î´ï¿½ï¿½Çµï¿½)
 		
 		RefreshSet(wantMappings,m);		
 		RefreshSet(unwantMappings,m);
@@ -1997,11 +2196,11 @@ public class RepairMapGraph implements Iterable<Integer>
 		int end = m.getTargetId();			
 			
 		int pairs[]=restoreMapping(m);												
-		//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+		//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 		int incorrectStart = pairs[0];
 		int incorrectEnd = pairs[1];
 		
-		//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+		//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 		if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 		{			
 			removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unwantMappings);
@@ -2014,7 +2213,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		Graph tempGraph=new Graph();
 		tempGraph.init(originalMap);
 		
-		//²¢ÇÒ¹ØÁªµÄÍ¼Èç¹û´æÔÚÒ²ĞèÒªÒÆ³ı	
+		//ï¿½ï¿½ï¿½Ò¹ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½Òªï¿½Æ³ï¿½	
 		if(m.getRelationship().equals(MappingRelation.SUBCLASS)||m.getRelationship().equals(MappingRelation.EQUIVALENCE))
 		{
 			tempGraph.removeEdge(start,end);
@@ -2033,7 +2232,7 @@ public class RepairMapGraph implements Iterable<Integer>
 				int target=tempMap.getTargetId();
 				
 				boolean flag1=false,flag2=false;
-				//ÁÙÊ±Ôö¼Ó2Ìõ´ı¼ì²âµÄ±ß,ÅĞ¶ÏÔö¼ÓmappingµÄÍ¼ĞÎ½á¹¹ÄÜ·ñÍÆµ¼³ö±»¾Ü¾øµÄmappings
+				//ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½,ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Í¼ï¿½Î½á¹¹ï¿½Ü·ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½mappings
 				if(tempMap.getRelationship().equals(MappingRelation.SUBCLASS)||tempMap.getRelationship().equals(MappingRelation.EQUIVALENCE))
 				{
 					tempGraph.addEdge(source,target);
@@ -2055,11 +2254,11 @@ public class RepairMapGraph implements Iterable<Integer>
 						unwantMappings.add(tempMap);
 					
 				    pairs=restoreMapping(tempMap);												
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 				    incorrectStart = pairs[0];
 				    incorrectEnd = pairs[1];
 					
-					//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+					//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 					{			
 						removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unwantMappings);
@@ -2068,11 +2267,11 @@ public class RepairMapGraph implements Iterable<Integer>
 					{
 						removeObjectPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unwantMappings);
 					}			
-					// µİ¹é²Ù×÷
+					// ï¿½İ¹ï¿½ï¿½ï¿½ï¿½
 					int extendIndex=a.getIndexBidirectional(source, target);
-					strongRejectComplete(extendIndex,wantMappings,unwantMappings);
+					//strongRejectComplete(extendIndex,wantMappings,unwantMappings);
 				}
-				//½«ÁÙÊ±Ôö¼ÓµÄ2Ìõ´ı¼ì²âµÄ±ß½øĞĞÉ¾³ı
+				//ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Óµï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ß½ï¿½ï¿½ï¿½É¾ï¿½ï¿½
 				if(m.getRelationship().equals(MappingRelation.SUBCLASS)||m.getRelationship().equals(MappingRelation.EQUIVALENCE))
 				{
 					tempGraph.removeEdge(source,target);
@@ -2086,6 +2285,150 @@ public class RepairMapGraph implements Iterable<Integer>
 		}			
 	}
 	
+	public void strongRejectComplete2(int index,ArrayList<Mapping> wantMappings,ArrayList<Mapping> unwantMappings, ArrayList<Mapping> reliableMappings)
+	{
+		HashSet<Integer> indexSet=new HashSet<Integer>();
+		if(aml.getAlignment().getPropertyMap().containsKey(index))
+			indexSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		else
+			indexSet.add(index);
+		indexSet.retainAll(MapMinimalConflictSet.keySet());
+		for(Integer in: indexSet)
+		{
+			System.out.println("The number of related Minimal conflict sets is "+ MapMinimalConflictSet.get(in).size());
+			// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½MIPSs,ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ü¾ï¿½ï¿½Ë¸ï¿½mappingï¿½ï¿½Ò²ï¿½ï¿½ï¿½Ü±ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½mappingÒ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Òª×¨ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½
+			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet = new HashSet(MapMinimalConflictSet.get(in));
+			MinimalConflictSet.removeAll(MapMinimalConflictSet.get(in));
+			MapMinimalConflictSet.remove(in);
+			Iterator<Entry<Integer, ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>>> iter = MapMinimalConflictSet
+					.entrySet().iterator();
+			while (iter.hasNext()) {
+				Integer r = iter.next().getKey();
+				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP = removeAllMIPP(
+						MapMinimalConflictSet.get(r), MIPPSet);
+				if (leftMIPP.isEmpty()) // Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
+				{
+					// MapMinimalConflictSet.remove(r);
+					iter.remove();
+				} else // ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
+				{
+					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets = new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(
+							leftMIPP);
+					MapMinimalConflictSet.put(r, MIPPSets);
+				}
+			}	
+		}
+				
+		Mapping m = a.get(index);
+		m.setStatus(MappingStatus.INCORRECT);
+		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.INCORRECT);	
+		//ï¿½ï¿½Îªmappingï¿½Ñ¾ï¿½ï¿½Ü¾ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¹ï¿½Ïµï¿½ï¿½ÒªÈ¥ï¿½ï¿½(×¢ï¿½ï¿½wantMappingï¿½ï¿½ï¿½Öµï¿½ï¿½Î´ï¿½ï¿½Çµï¿½)
+		
+		RefreshSet(wantMappings,m);		
+		RefreshSet(unwantMappings,m);
+		unwantMappings.add(m);		
+		
+			
+		int start = m.getSourceId();
+		int end = m.getTargetId();			
+			
+		int pairs[]=restoreMapping(m);												
+		//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
+		int incorrectStart = pairs[0];
+		int incorrectEnd = pairs[1];
+		
+		//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
+		if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
+		{			
+			removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unwantMappings);
+		}			
+		else if(aml.getSource().getObjectProperties().contains(incorrectStart)&&aml.getTarget().getObjectProperties().contains(incorrectEnd))
+		{
+			removeObjectPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unwantMappings);
+		}
+		
+		Graph tempGraph=new Graph();
+		tempGraph.init(originalMap);
+		
+		//ï¿½ï¿½ï¿½Ò¹ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½Òªï¿½Æ³ï¿½	
+		if(m.getRelationship().equals(MappingRelation.SUBCLASS)||m.getRelationship().equals(MappingRelation.EQUIVALENCE))
+		{
+			tempGraph.removeEdge(start,end);
+		}
+		if(m.getRelationship().equals(MappingRelation.SUPERCLASS)||m.getRelationship().equals(MappingRelation.EQUIVALENCE))
+		{
+			tempGraph.removeEdge(end,start);
+		}
+		
+		for(int i=0;i<maps.size();i++)  
+		{	
+			Mapping tempMap=maps.get(i); 
+			int source=tempMap.getSourceId();
+			int target=tempMap.getTargetId();
+			if(maps.get(i).getStatus().equals(MappingStatus.UNKNOWN)||reliableMappings.contains(tempMap))
+			{
+				boolean flag1=false,flag2=false;
+				//ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½,ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Í¼ï¿½Î½á¹¹ï¿½Ü·ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½mappings
+				if(tempMap.getRelationship().equals(MappingRelation.SUBCLASS)||tempMap.getRelationship().equals(MappingRelation.EQUIVALENCE))
+				{
+					tempGraph.addEdge(source,target);
+					List<ArrayList<Integer>> CandidatePaths=tempGraph.getPaths(start, end);	
+				    flag1=entailStrongRejectedMapping(CandidatePaths,i);
+				}
+				if(tempMap.getRelationship().equals(MappingRelation.SUPERCLASS)||tempMap.getRelationship().equals(MappingRelation.EQUIVALENCE))
+				{
+					tempGraph.addEdge(target,source);
+					List<ArrayList<Integer>> CandidatePaths=tempGraph.getPaths(end, start);				
+				    flag2=entailStrongRejectedMapping(CandidatePaths,i);
+				}
+									
+				if(flag1||flag2)
+				{
+					tempMap.setStatus(MappingStatus.INCORRECT);
+					aml.getAlignment().get(tempMap.getSourceId(), tempMap.getTargetId()).setStatus(MappingStatus.INCORRECT);
+					if(!unwantMappings.contains(tempMap))
+						unwantMappings.add(tempMap);
+					if(reliableMappings.contains(tempMap))
+					{
+						reliableMappings.remove(tempMap);
+						removeEdge(source,target);
+						removeEdge(target,source);
+					}
+					
+				    pairs=restoreMapping(tempMap);												
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
+				    incorrectStart = pairs[0];
+				    incorrectEnd = pairs[1];
+					
+					//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
+					if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
+					{			
+						removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unwantMappings);
+					}			
+					else if(aml.getSource().getObjectProperties().contains(incorrectStart)&&aml.getTarget().getObjectProperties().contains(incorrectEnd))
+					{
+						removeObjectPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unwantMappings);
+					}			
+					// ï¿½İ¹ï¿½ï¿½ï¿½ï¿½
+					int extendIndex=a.getIndexBidirectional(source, target);
+					//strongRejectComplete(extendIndex,wantMappings,unwantMappings);
+				}
+				//ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Óµï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ß½ï¿½ï¿½ï¿½É¾ï¿½ï¿½
+				if(m.getRelationship().equals(MappingRelation.SUBCLASS)||m.getRelationship().equals(MappingRelation.EQUIVALENCE))
+				{
+					tempGraph.removeEdge(source,target);
+				}
+				if(m.getRelationship().equals(MappingRelation.SUPERCLASS)||m.getRelationship().equals(MappingRelation.EQUIVALENCE))
+				{
+					tempGraph.removeEdge(target,source);
+				}
+						
+			}
+		}
+		
+		
+	}
+	
 	public void weakReject(int index,ArrayList<Mapping> wantMappings,ArrayList<Mapping> unWantMappings)
 	{
 		HashSet<Integer> indexSet=new HashSet<Integer>();
@@ -2097,7 +2440,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		for(Integer in:indexSet)
 		{
 			System.out.println("The number of related Minimal conflict sets is "+ MapMinimalConflictSet.get(in).size());
-			// ¸üĞÂÒ»±éMIPSs,µ«¼´Ê¹¾Ü¾øÁË¸Ämapping£¬Ò²²»ÄÜ±£Ö¤ÁíÍâÒ»¸ömappingÒ»¶¨ÊÇÕıÈ·»òÕß´íÎóµÄ£¬»¹ĞèÒª×¨¼ÒÀ´ÅĞ¶Ï
+			// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½MIPSs,ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ü¾ï¿½ï¿½Ë¸ï¿½mappingï¿½ï¿½Ò²ï¿½ï¿½ï¿½Ü±ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½mappingÒ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Òª×¨ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½
 			HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet = new HashSet(MapMinimalConflictSet.get(in));
 			MinimalConflictSet.removeAll(MapMinimalConflictSet.get(in));
 			MapMinimalConflictSet.remove(in);
@@ -2107,11 +2450,11 @@ public class RepairMapGraph implements Iterable<Integer>
 				Integer r = iter.next().getKey();
 				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP = removeAllMIPP(
 						MapMinimalConflictSet.get(r), MIPPSet);
-				if (leftMIPP.isEmpty()) // Îª¿ÕÔòÖ±½ÓÒÆ³ı
+				if (leftMIPP.isEmpty()) // Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
 				{
 					// MapMinimalConflictSet.remove(r);
 					iter.remove();
-				} else // ¸üĞÂÔ­À´µÄMIPPSetsµÄ´óĞ¡
+				} else // ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
 				{
 					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets = new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(
 							leftMIPP);
@@ -2123,7 +2466,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		Mapping m = a.get(index);
 		m.setStatus(MappingStatus.INCORRECT);
 		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.INCORRECT);
-		//ÒòÎªmappingÒÑ¾­¾Ü¾øÁË£¬ËùÒÔwantMappingÓëunWantMappingÖĞµÄ×Ó¹ØÏµ¶¼ĞèÒªÈ¥³ı(×¢Òâ×Ó¹ØÏµµÄ±ê¼Ç¶¼ÊÇunknown)
+		//ï¿½ï¿½Îªmappingï¿½Ñ¾ï¿½ï¿½Ü¾ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½wantMappingï¿½ï¿½unWantMappingï¿½Ğµï¿½ï¿½Ó¹ï¿½Ïµï¿½ï¿½ï¿½ï¿½ÒªÈ¥ï¿½ï¿½(×¢ï¿½ï¿½ï¿½Ó¹ï¿½Ïµï¿½Ä±ï¿½Ç¶ï¿½ï¿½ï¿½unknown)
 		RefreshSet(wantMappings,m);		
 		RefreshSet(unWantMappings,m);	
 		unWantMappings.add(m);	
@@ -2133,11 +2476,11 @@ public class RepairMapGraph implements Iterable<Integer>
 		int end = m.getTargetId();	
 		
 		int pairs[]=restoreMapping(m);												
-		//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+		//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 		int incorrectStart = pairs[0];
 		int incorrectEnd = pairs[1];
 		
-		//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+		//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 		if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 		{			
 			removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unWantMappings);
@@ -2150,7 +2493,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		
 		Graph tempGraph=new Graph();
 		tempGraph.init(originalMap);
-		//²¢ÇÒ¹ØÁªµÄÍ¼Èç¹û´æÔÚÒ²ĞèÒªÒÆ³ı	
+		//ï¿½ï¿½ï¿½Ò¹ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½Òªï¿½Æ³ï¿½	
 		tempGraph.removeEdge(start,end);
 		tempGraph.removeEdge(end,start);
 				
@@ -2163,11 +2506,11 @@ public class RepairMapGraph implements Iterable<Integer>
 				int source=tempMap.getSourceId();
 				int target=tempMap.getTargetId();
 				
-				//ÁÙÊ±Ôö¼Ó2Ìõ´ı¼ì²âµÄ±ß
+				//ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½
 				tempGraph.addEdge(source,target);
 				tempGraph.addEdge(target,source);
 				
-				//ÅĞ¶ÏÔö¼ÓmappingµÄÍ¼ĞÎ½á¹¹ÄÜ·ñÍÆµ¼³ö±»¾Ü¾øµÄmappings
+				//ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½mappingï¿½ï¿½Í¼ï¿½Î½á¹¹ï¿½Ü·ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½mappings
 				List<ArrayList<Integer>> CandidatePaths=tempGraph.getPaths(start, end);	
 				Mapping entailedMapping1=entailWeakRejectedMapping(CandidatePaths,i,source,target);		
 				/*if(entailedMapping1!=null)
@@ -2188,7 +2531,7 @@ public class RepairMapGraph implements Iterable<Integer>
 					if(!tempUnwantMappings.contains(entailedMapping2))
 						tempUnwantMappings.add(entailedMapping2);		
 				}					
-				//½«ÁÙÊ±Ôö¼ÓµÄ2Ìõ´ı¼ì²âµÄ±ß½øĞĞÉ¾³ı
+				//ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Óµï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ß½ï¿½ï¿½ï¿½É¾ï¿½ï¿½
 				tempGraph.removeEdge(source,target);
 				tempGraph.removeEdge(target,source);
 			}
@@ -2200,20 +2543,20 @@ public class RepairMapGraph implements Iterable<Integer>
 			int target = temp.getTargetId();
 			if(temp.getRelationship().equals(MappingRelation.SUBCLASS))
 			{
-				if(existEquivalence(unWantMappings,temp))  //Ì½Ë÷Ç±ÔÚµÈ¼ÛµÄÇé¿ö
+				if(existEquivalence(unWantMappings,temp))  //Ì½ï¿½ï¿½Ç±ï¿½ÚµÈ¼Ûµï¿½ï¿½ï¿½ï¿½
 				{
 					RefreshSet(unWantMappings,temp);
 					temp.setRelationship(MappingRelation.EQUIVALENCE);				
 					temp.setStatus(MappingStatus.INCORRECT);				
 					aml.getAlignment().get(source, target).setStatus(MappingStatus.INCORRECT);		
 					
-					//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+					//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					pairs=restoreMapping(temp);												
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					incorrectStart = pairs[0];
 					incorrectEnd = pairs[1];
 					
-					//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+					//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 					{			
 						removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unWantMappings);
@@ -2228,20 +2571,20 @@ public class RepairMapGraph implements Iterable<Integer>
 			}
 			else if(temp.getRelationship().equals(MappingRelation.SUPERCLASS))
 			{
-				if(existEquivalence(unWantMappings,temp))  //Ì½Ë÷Ç±ÔÚµÈ¼ÛµÄÇé¿ö
+				if(existEquivalence(unWantMappings,temp))  //Ì½ï¿½ï¿½Ç±ï¿½ÚµÈ¼Ûµï¿½ï¿½ï¿½ï¿½
 				{
 					RefreshSet(unWantMappings,temp);
 					temp.setRelationship(MappingRelation.EQUIVALENCE);				
 					temp.setStatus(MappingStatus.INCORRECT);
 					aml.getAlignment().get(source, target).setStatus(MappingStatus.INCORRECT);	
 					
-					//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+					//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					pairs=restoreMapping(temp);												
-					//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+					//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 					incorrectStart = pairs[0];
 					incorrectEnd = pairs[1];
 					
-					//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+					//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 					if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 					{			
 						removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unWantMappings);
@@ -2261,13 +2604,13 @@ public class RepairMapGraph implements Iterable<Integer>
 				if(!unWantMappings.contains(temp))
 					unWantMappings.add(temp);
 				
-				//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+				//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				pairs=restoreMapping(temp);												
-				//¶ÔÓÚ½ÇÉ«ÊôĞÔ½øĞĞÒ»¸öÇ±ÔÚÅĞ¶Ï
+				//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ğ¶ï¿½
 				incorrectStart = pairs[0];
 				incorrectEnd = pairs[1];
 				
-				//Ìí¼ÓÇ±ÔÚ½ÇÉ«µÄÇé¿ö
+				//ï¿½ï¿½ï¿½Ç±ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½
 				if(aml.getSource().getDataProperties().contains(incorrectStart)&&aml.getTarget().getDataProperties().contains(incorrectEnd))
 				{			
 					removeDataPropety4MapppingGraph(incorrectStart,incorrectEnd,wantMappings,unWantMappings);
@@ -2297,12 +2640,12 @@ public class RepairMapGraph implements Iterable<Integer>
 		{
 			Integer  r=iter.next().getKey();	
 				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP=removeAllMIPP(MapMinimalConflictSet.get(r),MIPPSet);
-				if(leftMIPP.isEmpty())  //Îª¿ÕÔòÖ±½ÓÒÆ³ı
+				if(leftMIPP.isEmpty())  //Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
 				{
 					//MapMinimalConflictSet.remove(r);
 					iter.remove();
 				}
-				else  //¸üĞÂÔ­À´µÄMIPPSetsµÄ´óĞ¡
+				else  //ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
 				{
 					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets=new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(leftMIPP);
 					MapMinimalConflictSet.put(r, MIPPSets);
@@ -2313,6 +2656,50 @@ public class RepairMapGraph implements Iterable<Integer>
 			Mapping m = a.get(index);
 			m.setStatus(MappingStatus.INCORRECT);
 			aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.INCORRECT);
+		}
+	}
+	
+	public void remove2(int index,boolean flag)
+	{
+		HashSet<Integer> indexSet=new HashSet<Integer>();
+		if(aml.getAlignment().getPropertyMap().containsKey(index))
+			indexSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		else
+			indexSet.add(index);
+		indexSet.retainAll(MapMinimalConflictSet.keySet());
+		for(Integer in: indexSet)
+		{	
+		HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet= new HashSet(MapMinimalConflictSet.get(in));
+		MinimalConflictSet.removeAll(MapMinimalConflictSet.get(in));
+		MapMinimalConflictSet.remove(in);
+		Iterator<Entry<Integer, ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>>> iter= MapMinimalConflictSet.entrySet().iterator();
+		while(iter.hasNext())
+		{
+			Integer  r=iter.next().getKey();	
+				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP=removeAllMIPP(MapMinimalConflictSet.get(r),MIPPSet);
+				if(leftMIPP.isEmpty())  //Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
+				{
+					//MapMinimalConflictSet.remove(r);
+					iter.remove();
+				}
+				else  //ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
+				{
+					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets=new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(leftMIPP);
+					MapMinimalConflictSet.put(r, MIPPSets);
+				}
+		}
+		
+		}
+		if(aml.getAlignment().getPropertyMap().containsKey(index))
+			indexSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		for(Integer in: indexSet)
+		{
+			if(flag==true)
+			{
+				Mapping m = a.get(in);
+				m.setStatus(MappingStatus.INCORRECT);
+				aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.INCORRECT);
+			}
 		}
 	}
 	
@@ -2327,12 +2714,12 @@ public class RepairMapGraph implements Iterable<Integer>
 		{
 			Integer  r=iter.next().getKey();	
 				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP=removeAllMIPP(MapMinimalConflictSet.get(r),MIPPSet);
-				if(leftMIPP.isEmpty())  //Îª¿ÕÔòÖ±½ÓÒÆ³ı
+				if(leftMIPP.isEmpty())  //Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
 				{
 					//MapMinimalConflictSet.remove(r);
 					iter.remove();
 				}
-				else  //¸üĞÂÔ­À´µÄMIPPSetsµÄ´óĞ¡
+				else  //ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
 				{
 					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets=new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(leftMIPP);
 					MapMinimalConflictSet.put(r, MIPPSets);
@@ -2348,13 +2735,59 @@ public class RepairMapGraph implements Iterable<Integer>
 		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setRelationship(rel);
 	}
 	
+	public void revise2(int index,double sim)
+	{
+		HashSet<Integer> indexSet=new HashSet<Integer>();
+		if(aml.getAlignment().getPropertyMap().containsKey(index))
+			indexSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		else
+			indexSet.add(index);
+		indexSet.retainAll(MapMinimalConflictSet.keySet());
+		for(Integer in: indexSet)
+		{
+		System.out.println("The number of related Minimal conflict sets is "+ MapMinimalConflictSet.get(in).size());	
+		HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSet= new HashSet(MapMinimalConflictSet.get(in));
+		MinimalConflictSet.removeAll(MapMinimalConflictSet.get(in));
+		MapMinimalConflictSet.remove(in);
+		Iterator<Entry<Integer, ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>>> iter= MapMinimalConflictSet.entrySet().iterator();
+		while(iter.hasNext())
+		{
+			Integer  r=iter.next().getKey();	
+				LinkedList<Pair<ArrayList<Integer>, ArrayList<Integer>>> leftMIPP=removeAllMIPP(MapMinimalConflictSet.get(r),MIPPSet);
+				if(leftMIPP.isEmpty())  //Îªï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Æ³ï¿½
+				{
+					//MapMinimalConflictSet.remove(r);
+					iter.remove();
+				}
+				else  //ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½MIPPSetsï¿½Ä´ï¿½Ğ¡
+				{
+					ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> MIPPSets=new ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>>(leftMIPP);
+					MapMinimalConflictSet.put(r, MIPPSets);
+				}
+		}		
+		}
+		if(aml.getAlignment().getPropertyMap().containsKey(index))
+			indexSet.addAll(aml.getAlignment().getPropertyMap().get(index));
+		for(Integer in: indexSet)
+		{
+		Mapping m = a.get(in);
+		m.setStatus(MappingStatus.UNKNOWN);			
+		MappingRelation rel = MappingRelation.parseRelation(StringEscapeUtils.unescapeXml("?"));
+		m.setRelationship(rel);
+		m.setSimilarity(sim);
+		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setSimilarity(sim);
+		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.UNKNOWN);
+		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setRelationship(rel);
+		}
+	}
+	
 	
 
 	public LinkedList <Pair<ArrayList<Integer>, ArrayList<Integer>>> removeAllMIPP(ArrayList<Pair<ArrayList<Integer>, ArrayList<Integer>>> src, HashSet<Pair<ArrayList<Integer>, ArrayList<Integer>>> othHash) 
 	{
-		LinkedList <Pair<ArrayList<Integer>, ArrayList<Integer>>> result = new LinkedList(src);// ´ó¼¯ºÏÓÃlinkedlist
-		//HashSet othHash = new HashSet(oth);// Ğ¡¼¯ºÏÓÃhashset
-		Iterator iter = result.iterator();// ²ÉÓÃIteratorµü´úÆ÷½øĞĞÊı¾İµÄ²Ù×÷
+		LinkedList <Pair<ArrayList<Integer>, ArrayList<Integer>>> result = new LinkedList(src);// ï¿½ó¼¯ºï¿½ï¿½ï¿½linkedlist
+		//HashSet othHash = new HashSet(oth);// Ğ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½hashset
+		Iterator iter = result.iterator();// ï¿½ï¿½ï¿½ï¿½Iteratorï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İµÄ²ï¿½ï¿½ï¿½
 		while (iter.hasNext()) 
 		{
 			if (othHash.contains(iter.next())) 
@@ -2412,7 +2845,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		//Build the classList, starting with the classes
 		//involved in disjoint clauses
 		classList.addAll(rels.getDisjoint());
-		//If there aren't any, there is nothing else to do(µ«ÊÇ°ë×Ô¶¯ĞŞ¸´¿ÉÄÜ²»ĞèÒªÕâ¸öÌõ¼ş£¬Õâ¸öÌõ¼şÖ÷ÒªÊÇÎªÁËÈ·¶¨ÓĞÃ»ÓĞmips)
+		//If there aren't any, there is nothing else to do(ï¿½ï¿½ï¿½Ç°ï¿½ï¿½Ô¶ï¿½ï¿½Ş¸ï¿½ï¿½ï¿½ï¿½Ü²ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Îªï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½mips)
 		/*if(classList.size() == 0)
 		{
 			System.out.println("Nothing to repair!");
@@ -2427,7 +2860,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			if(AML.getInstance().getURIMap().isClass(i))
 				classList.add(i);
 		
-		//½«¿ÉÄÜµÄÊôĞÔÒ²Ìí¼Ó½øÈë
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½Ó½ï¿½ï¿½ï¿½
 		ExtendClassListByProperty();
 		
 		//Then build the checkList
@@ -2441,7 +2874,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		t.clear();
 		System.out.println("The number of subClassOf relationship is: " + parentMap.size());
 		RefineParentMap();		
-		//¹¹½¨Ò»¸öÍ¼
+		//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Í¼
 		graph.init(parentMap);	
 		System.out.println("Check list: " + checkList.size() + " classes to check");
 		//Build the ancestorMap with transitive closure
@@ -2454,9 +2887,9 @@ public class RepairMapGraph implements Iterable<Integer>
 		
 		//And finally, get the list of conflict sets
 		localTime = System.currentTimeMillis()/1000;
-		//buildConflictSets();  //¶àÏß³ÌµÄ°ì·¨
-		buildMIPPs();  //µ¥Ïß³ÌµÄ°ì·¨
-		//buildMIPPs2();  //µ¥Ïß³ÌµÄ°ì·¨
+		//buildConflictSets();  //ï¿½ï¿½ï¿½ß³ÌµÄ°ì·¨
+		buildMIPPs();  //ï¿½ï¿½ï¿½ß³ÌµÄ°ì·¨
+		//buildMIPPs2();  //ï¿½ï¿½ï¿½ß³ÌµÄ°ì·¨
 		/*System.out.println("Computed minimal conflict sets in " + 
 				(System.currentTimeMillis()/1000-localTime) + " seconds");
 		System.out.println("Sets of conflicting mappings: " + conflictSets.size());
@@ -2727,7 +3160,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			teMap.clear();
 		}
 		
-		//ÍêÉÆÖ®Ç°µÄbug
+		//ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½bug
 		for(Mapping m : a)
 		{
 			int source = m.getSourceId();
@@ -2738,7 +3171,7 @@ public class RepairMapGraph implements Iterable<Integer>
 				checkList.add(target);
 		}
 		
-			//À©Õ¹ÊôĞÔµÄcheckList
+			//ï¿½ï¿½Õ¹ï¿½ï¿½ï¿½Ôµï¿½checkList
 		//ExtendCheckListByProperty();		
 	}
 
@@ -2770,7 +3203,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			Set<Integer> ancestors=rels.getSuperClasses(node, false);		
 			for(Integer anc: ancestors)
 			{
-				if(CoreParents.contains(anc)) //¼´¸ÃµãµÄÂ·¾¶ÆäÊµÒÑ¾­±éÀú¹ıÁË(ÖĞ¼äµÄ½áµãÍ¨³£ÔÚ±éÀú×æÏÈ½áµãµÄÊ±¶¼·ÃÎÊµ½ÁË)
+				if(CoreParents.contains(anc)) //ï¿½ï¿½ï¿½Ãµï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½Êµï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Ğ¼ï¿½Ä½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½)
 					continue;
 				List<ArrayList<Integer>> getPaths=sourceGraph.getPaths(node, anc);
 				for(ArrayList<Integer> path: getPaths)
@@ -2782,7 +3215,7 @@ public class RepairMapGraph implements Iterable<Integer>
 							CoreParents.add(n);
 							break;
 						}
-						if(CoreParents.contains(n))  //±ÜÃâÖØ¸´¼ì²â
+						if(CoreParents.contains(n))  //ï¿½ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½
 						{
 							break;
 						}
@@ -2802,7 +3235,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			Set<Integer> ancestors=rels.getSuperClasses(node, false);		
 			for(Integer anc: ancestors)
 			{
-				if(CoreParents.contains(anc)) //¼´¸ÃµãµÄÂ·¾¶ÆäÊµÒÑ¾­±éÀú¹ıÁË(ÖĞ¼äµÄ½áµãÍ¨³£ÔÚ±éÀú×æÏÈ½áµãµÄÊ±¶¼·ÃÎÊµ½ÁË)
+				if(CoreParents.contains(anc)) //ï¿½ï¿½ï¿½Ãµï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½Êµï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Ğ¼ï¿½Ä½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½)
 					continue;
 				List<ArrayList<Integer>> getPaths=targetGraph.getPaths(node, anc);
 				for(ArrayList<Integer> path: getPaths)
@@ -2814,7 +3247,7 @@ public class RepairMapGraph implements Iterable<Integer>
 							CoreParents.add(n);
 							break;
 						}
-						if(CoreParents.contains(n))  //±ÜÃâÖØ¸´¼ì²â
+						if(CoreParents.contains(n))  //ï¿½ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½
 						{
 							break;
 						}
@@ -2828,13 +3261,13 @@ public class RepairMapGraph implements Iterable<Integer>
 		sourceGraph.clear();
 		targetGraph.clear();
 		
-		//´æ´¢Ò»·İÔ­Ê¼	
+		//ï¿½æ´¢Ò»ï¿½ï¿½Ô­Ê¼	
 		/*for(Integer index: parentMap.keySet())
 		{
 			originalMap.put(index, parentMap.get(index));
 		}*/
 		
-		for(Mapping m : a)  //¸üĞÂmappingµÄ²¿·Ö
+		for(Mapping m : a)  //ï¿½ï¿½ï¿½ï¿½mappingï¿½Ä²ï¿½ï¿½ï¿½
 		{
 			int source = m.getSourceId();
 			int target = m.getTargetId();		
@@ -2863,13 +3296,13 @@ public class RepairMapGraph implements Iterable<Integer>
 				}
 			}
 			
-			//¿ÉÄÜ²»ĞèÒªÁË£¬ÒòÎªÔÚalignmentµÄÇé¿öÏÂÒÑ¾­×öÁË¡£
-			//¶ÔÏóÊôĞÔ¶ÔparentµÄÀ©³ä
+			//ï¿½ï¿½ï¿½Ü²ï¿½ï¿½ï¿½Òªï¿½Ë£ï¿½ï¿½ï¿½Îªï¿½ï¿½alignmentï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ë¡ï¿½
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½parentï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			/*if(aml.getSource().getObjectProperties().contains(source)||aml.getTarget().getObjectProperties().contains(target))
 			{
 				
 			}	
-			//ÊıÖµÊôĞÔ¶ÔparentµÄÀ©³ä
+			//ï¿½ï¿½Öµï¿½ï¿½ï¿½Ô¶ï¿½parentï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			else if (aml.getSource().getDataProperties().contains(source)||aml.getTarget().getDataProperties().contains(target)) 
 			{
 				
@@ -2898,7 +3331,7 @@ public class RepairMapGraph implements Iterable<Integer>
 				if(classList.contains(j))
 					addRelation(i, j, new Path());
 			//Mappings
-			Set<Integer> maps = a.getMappingsBidirectional(i); //Ó¦¸Ã»á·µ»Ø2¸ömapping°É(µ«ÊÇÖ»·µ»ØÁËÒ»¸ö)
+			Set<Integer> maps = a.getMappingsBidirectional(i); //Ó¦ï¿½Ã»á·µï¿½ï¿½2ï¿½ï¿½mappingï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½)
 			for(Integer j : maps)
 			{
 				//Get both the mapping and its ancestors
@@ -3053,7 +3486,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		for(Integer des: ancestorMap.keySet())
 		{
 			Set<Integer> concepts=new HashSet<>(ancestorMap.keySet(des));
-			concepts.remove(des);  //ÒÆ³ı×ÔÉí
+			concepts.remove(des);  //ï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½
 			for(Integer dis: rels.getDisjoint())
 			{
 				if(concepts.contains(dis)||des==dis)
@@ -3071,10 +3504,10 @@ public class RepairMapGraph implements Iterable<Integer>
 		{
 			Set<Integer> concepts=new HashSet<>();
 			Set<Integer> ancs=new HashSet<>(ancestorMap.keySet(des));
-			ancs.remove(des);  //ÒÆ³ı×ÔÉí
+			ancs.remove(des);  //ï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½
 			
 			
-			for(Integer anc: ancs)  //¸üĞÂ×æÏÈ½áµã
+			for(Integer anc: ancs)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È½ï¿½ï¿½
 			{
 				List<ArrayList<Integer>> paths=tempGraph.getPaths(des, anc);
 				if(!paths.isEmpty())
@@ -3083,7 +3516,7 @@ public class RepairMapGraph implements Iterable<Integer>
 				}
 			}
 						
-			for(Integer dis: rels.getDisjoint()) //¸üĞÂ²»Ïà½»µÄ½áµã
+			for(Integer dis: rels.getDisjoint()) //ï¿½ï¿½ï¿½Â²ï¿½ï¿½à½»ï¿½Ä½ï¿½ï¿½
 			{
 				if(concepts.contains(dis)||des==dis)
 					continue;
@@ -3129,7 +3562,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			buildClassConflictPaths(i);
 			num++;			
 		}
-		//¼°Ê±ÊÍ·Å
+		//ï¿½ï¿½Ê±ï¿½Í·ï¿½
 		ancestors.clear();
 		checkedState.clear();
 		for (Pair<ArrayList<Integer>, ArrayList<Integer>> mipp : MinimalConflictSet) 
@@ -3177,9 +3610,9 @@ public class RepairMapGraph implements Iterable<Integer>
 				continue;
 			for(Integer j : rels.getDisjoint(i))
 			{
-				/*if(!disj.contains(j))  //i>j²»ÊÇºÜ¶®ÎªÊ²Ã´ÒªÕâÑùÉè¼Æ£¬¿ÉÄÜÊÇ¶Ô³ÆĞÔµÄ¹ØÏµ£¬Ö»ĞèÒª¿¼ÂÇÒ»°ë¼´¿É
+				/*if(!disj.contains(j))  //i>jï¿½ï¿½ï¿½ÇºÜ¶ï¿½ÎªÊ²Ã´Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶Ô³ï¿½ï¿½ÔµÄ¹ï¿½Ïµï¿½ï¿½Ö»ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ò»ï¿½ë¼´ï¿½ï¿½
 					continue;*/
-				if(i > j || !disj.contains(j))  //i>j²»ÊÇºÜ¶®ÎªÊ²Ã´ÒªÕâÑùÉè¼Æ£¬¿ÉÄÜÊÇ¶Ô³ÆĞÔµÄ¹ØÏµ£¬Ö»ĞèÒª¿¼ÂÇÒ»°ë¼´¿É
+				if(i > j || !disj.contains(j))  //i>jï¿½ï¿½ï¿½ÇºÜ¶ï¿½ÎªÊ²Ã´Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶Ô³ï¿½ï¿½ÔµÄ¹ï¿½Ïµï¿½ï¿½Ö»ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ò»ï¿½ë¼´ï¿½ï¿½
 					continue;
 				if(checkedState.keySet().contains(classId+"-"+i+"-"+j))
 						continue;
@@ -3187,10 +3620,10 @@ public class RepairMapGraph implements Iterable<Integer>
 						continue;	
 				
 				/*System.out.println("-------------------------------------------------------------");
-				System.out.println("The ID of unsatisfiable concept£º"+classId+":"+AML.getInstance().getURIMap().getLocalName(classId));
-				//¿ÉÒÔÀûÓÃ AML.getInstance().getURIMap().contains(classId)À´½øĞĞÇø±ğÀà
-				System.out.println("Disjoint Node 1£º"+i+":"+AML.getInstance().getURIMap().getLocalName(i));
-				System.out.println("Disjoint Node 1£º"+j+":"+AML.getInstance().getURIMap().getLocalName(j));
+				System.out.println("The ID of unsatisfiable conceptï¿½ï¿½"+classId+":"+AML.getInstance().getURIMap().getLocalName(classId));
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ AML.getInstance().getURIMap().contains(classId)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				System.out.println("Disjoint Node 1ï¿½ï¿½"+i+":"+AML.getInstance().getURIMap().getLocalName(i));
+				System.out.println("Disjoint Node 1ï¿½ï¿½"+j+":"+AML.getInstance().getURIMap().getLocalName(j));
 				System.out.println("-------------------------------------------------------------");	*/		
 				/*ArrayList<Integer> Path1 =new ArrayList<Integer>();
 				ArrayList<Integer> Path2 =new ArrayList<Integer>();*/			
@@ -3205,10 +3638,10 @@ public class RepairMapGraph implements Iterable<Integer>
 				{					
 					for(ArrayList<Integer> p2:Paths2)
 					{
-						//ÒòÎªÊÇÖ¸Õë£¬µ±Path1µÄÈ¡Öµ·¢Éú¸Ä±äÊ±£¬»á¶ÔºóÃæµÄ²Ù×÷ÓĞËùÓ°Ïì
+						//ï¿½ï¿½Îªï¿½ï¿½Ö¸ï¿½ë£¬ï¿½ï¿½Path1ï¿½ï¿½È¡Öµï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ôºï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
 						ArrayList<Integer> temp1=new ArrayList<Integer>();
 						temp1.addAll(p1);
-						//ÒòÎªÊÇÖ¸Õë£¬µ±Path2µÄÈ¡Öµ·¢Éú¸Ä±äÊ±£¬»á¶ÔºóÃæµÄ²Ù×÷ÓĞËùÓ°Ïì
+						//ï¿½ï¿½Îªï¿½ï¿½Ö¸ï¿½ë£¬ï¿½ï¿½Path2ï¿½ï¿½È¡Öµï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ôºï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
 						ArrayList<Integer> temp2=new ArrayList<Integer>();
 						temp2.addAll(p2);
 						ArrayList<Integer> common=RefinePath(temp1,temp2); 																		
@@ -3216,7 +3649,7 @@ public class RepairMapGraph implements Iterable<Integer>
 						if(!MinimalConflictSet.contains(mipp))	
 						{
 							MinimalConflictSet.add(mipp);	
-							//¸ù¾İÂ·¾¶µÄË÷Òı·½Ê½£¬ÎÒÃÇ¿ÉÒÔÅĞ¶Ï´ÓclassIdµ½¾«Á¶ºóPathµÄÆğµãÖ®¼äµÄµã¶¼ÒÑ¾­ÍêÈ«¼ìË÷¹ıÁË(×¢ÒâÂ·¾¶µÄÔ¼Êø)¡£
+							//ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½Ğ¶Ï´ï¿½classIdï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Pathï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½Äµã¶¼ï¿½Ñ¾ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(×¢ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½)ï¿½ï¿½
 							for(Integer concept: common)
 							{
 								if(checkList.contains(concept))
@@ -3229,7 +3662,7 @@ public class RepairMapGraph implements Iterable<Integer>
 						//MinimalConflictSetMap.put(key, mipp);
 					}
 				}
-				/*System.out.println("¹ıÂËºóµÄÂ·¾¶Îª:"); //ÆäÊµÊÇ°üÀ¨ËùÓĞµÄ¸¸Ç×½áµã
+				/*System.out.println("ï¿½ï¿½ï¿½Ëºï¿½ï¿½Â·ï¿½ï¿½Îª:"); //ï¿½ï¿½Êµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ĞµÄ¸ï¿½ï¿½×½ï¿½ï¿½
 				System.out.println("**********************");
 				printResult(Paths1);
 				System.out.println("**********************");
@@ -3254,7 +3687,7 @@ public class RepairMapGraph implements Iterable<Integer>
 	
 	public List<ArrayList<Integer>> FilterPaths(List<ArrayList<Integer>> paths)
 	{				
-		//½¨Á¢ÏàÓ¦³åÍ»¸öÊıµÄÓ³Éä¹ØÏµ
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½Ïµ
 		int min=Integer.MAX_VALUE;
 		List<ArrayList<Integer>> newPaths=new ArrayList<ArrayList<Integer>>();
 		HashMap<Integer, List<ArrayList<Integer>>> pathMap=new HashMap<Integer, List<ArrayList<Integer>>>();
@@ -3306,7 +3739,7 @@ public class RepairMapGraph implements Iterable<Integer>
 	public ArrayList<Integer> RefinePath(ArrayList<Integer> Path1,ArrayList<Integer> Path2)
 	{	
 		ArrayList<Integer> commonNums=new ArrayList<Integer>();
-		if(Path1.size()==1||Path2.size()==1)  //³¤¶ÈÎª1,ÎŞĞë¾«¼ò
+		if(Path1.size()==1||Path2.size()==1)  //ï¿½ï¿½ï¿½ï¿½Îª1,ï¿½ï¿½ï¿½ë¾«ï¿½ï¿½
 			return commonNums;	
 		Iterator<Integer> iterator1 = Path1.iterator();
 		Iterator<Integer> iterator2 = Path2.iterator();
@@ -3319,14 +3752,14 @@ public class RepairMapGraph implements Iterable<Integer>
 			{
 				commonNums.add(num1);
 			}	
-			else if(!commonNums.isEmpty()) //Òşº¬ÁË²»ÏàµÈµÄÇé¿ö
+			else if(!commonNums.isEmpty()) //ï¿½ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½Èµï¿½ï¿½ï¿½ï¿½
 			{
 				commonNums.remove(commonNums.size()-1);
 				break;
 			}
 		}
 		//
-		if(commonNums.size()==Path1.size()||commonNums.size()==Path1.size()) //Á½ÌõÂ·¾¶ÓĞÖØµş£¬±£Áô×îºóÒ»¸öÔªËØ
+		if(commonNums.size()==Path1.size()||commonNums.size()==Path1.size()) //ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ôªï¿½ï¿½
 		{
 			commonNums.remove(commonNums.size()-1);
 		}
@@ -3423,7 +3856,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		return kg;
 	}
 	
-	//´ı¼ì²âµÄ½áµãÖĞµÄÂ·¾¶ÖÓÊÇ·ñ°üº¬ÔŞÍ¬µÄmappingsµÄID,°üÀ¨ÆğÊ¼µãÓëÖÕÖ¹µã
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ä½ï¿½ï¿½ï¿½Ğµï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½mappingsï¿½ï¿½ID,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½(numï¿½Ç´ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½Æ¥ï¿½ï¿½,approveNumï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½Í¬ï¿½ï¿½Æ¥ï¿½ï¿½)
 	public Mapping getEntailedMapping(List<ArrayList<Integer>> Paths,int num,int approveNum,int start, int end)
 	{
 		Mapping mapping=null;
@@ -3437,7 +3870,7 @@ public class RepairMapGraph implements Iterable<Integer>
 				index = a.getIndexBidirectional(node1, node2);
 				if(index!=-1&&index==approveNum)
 				{					
-					Mapping m = a.get(num);  //»ñÈ¡´ıÑéÖ¤µÄmapping
+					Mapping m = a.get(num);  //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½mapping
 					int sourceId = m.getSourceId();
 					int targetId = m.getTargetId();
 					double sim=m.getSimilarity();
@@ -3448,9 +3881,9 @@ public class RepairMapGraph implements Iterable<Integer>
 						else if(mapping!=null&&mapping.getRelationship().equals(MappingRelation.SUPERCLASS))
 						{
 							mapping.setRelationship(MappingRelation.EQUIVALENCE);	
-							return mapping;  //µÈ¼ÛÖ®ºó¾ÍÎŞĞè¼ì²éÁË
+							return mapping;  //ï¿½È¼ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 						}
-						break;	//Ò»ÌõÂ·¾¶Àï²»¿ÉÄÜ´æÔÚÖ±½ÓÊÇµÈ¼ÛmappingµÄÇé¿ö					
+						break;	//Ò»ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï²»ï¿½ï¿½ï¿½Ü´ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ÇµÈ¼ï¿½mappingï¿½ï¿½ï¿½ï¿½ï¿½					
 					} 
 					else if(sourceId == end && targetId == start)
 					{
@@ -3459,9 +3892,9 @@ public class RepairMapGraph implements Iterable<Integer>
 						else if(mapping!=null&&mapping.getRelationship().equals(MappingRelation.SUBCLASS))
 						{
 							mapping.setRelationship(MappingRelation.EQUIVALENCE);	
-							return mapping;   //µÈ¼ÛÖ®ºó¾ÍÎŞĞè¼ì²éÁË
+							return mapping;   //ï¿½È¼ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 						}
-						break; //Ò»ÌõÂ·¾¶Àï²»¿ÉÄÜ´æÔÚÖ±½ÓÊÇµÈ¼ÛmappingµÄÇé¿ö						
+						break; //Ò»ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï²»ï¿½ï¿½ï¿½Ü´ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ÇµÈ¼ï¿½mappingï¿½ï¿½ï¿½ï¿½ï¿½						
 					}
 				}			
 			}
@@ -3493,9 +3926,9 @@ public class RepairMapGraph implements Iterable<Integer>
 						else if(mapping!=null&&mapping.getRelationship().equals(MappingRelation.SUPERCLASS))
 						{
 							mapping.setRelationship(MappingRelation.EQUIVALENCE);	
-							return mapping;  //µÈ¼ÛÖ®ºó¾ÍÎŞĞè¼ì²éÁË
+							return mapping;  //ï¿½È¼ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 						}
-						break;	//Ò»ÌõÂ·¾¶Àï²»¿ÉÄÜ´æÔÚÖ±½ÓÊÇµÈ¼ÛmappingµÄÇé¿ö					
+						break;	//Ò»ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï²»ï¿½ï¿½ï¿½Ü´ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ÇµÈ¼ï¿½mappingï¿½ï¿½ï¿½ï¿½ï¿½					
 					} 
 					else 
 					{
@@ -3504,9 +3937,9 @@ public class RepairMapGraph implements Iterable<Integer>
 						else if(mapping!=null&&mapping.getRelationship().equals(MappingRelation.SUBCLASS))
 						{
 							mapping.setRelationship(MappingRelation.EQUIVALENCE);	
-							return mapping;   //µÈ¼ÛÖ®ºó¾ÍÎŞĞè¼ì²éÁË
+							return mapping;   //ï¿½È¼ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 						}
-						break; //Ò»ÌõÂ·¾¶Àï²»¿ÉÄÜ´æÔÚÖ±½ÓÊÇµÈ¼ÛmappingµÄÇé¿ö						
+						break; //Ò»ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï²»ï¿½ï¿½ï¿½Ü´ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ÇµÈ¼ï¿½mappingï¿½ï¿½ï¿½ï¿½ï¿½						
 					}
 				}			
 			}
@@ -3562,7 +3995,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		return false;
 	}
 	
-	//±»¾Ü¾øµÄÂ·¾¶ÖĞÊÇ·ñÓĞÎ´±»±ê¼ÇµÄmappingÇ£³¶ÆäÖĞ£¬Èç¹ûÓĞµÄ»°ÊÇÈõ¾Ü¾ø
+	//ï¿½ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½Çµï¿½mappingÇ£ï¿½ï¿½ï¿½ï¿½ï¿½Ğ£ï¿½ï¿½ï¿½ï¿½ï¿½ĞµÄ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½
 	public Mapping entailWeakRejectedMapping(List<ArrayList<Integer>> Paths,int checkNum, int source, int target)
 	{
 		Mapping m=null;
@@ -3676,7 +4109,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			Mapping m=set.get(i);
 			int sourceId=m.getSourceId();
 			int targetId=m.getTargetId();
-			if(sourceId==mapping.getSourceId()&&targetId==mapping.getTargetId())  //½áµã¶¼ÊÇ»ùÓÚsourceµ½targetÖ»ÊÇ¹ØÏµ¿ÉÄÜ²»Í¬£¬×¢ÒâµÈ¼Û¹ØÏµÊÇ²»±»refresh£¬ÒòÎªÒÑ¾­±ê¼ÇÁË¡£
+			if(sourceId==mapping.getSourceId()&&targetId==mapping.getTargetId())  //ï¿½ï¿½ã¶¼ï¿½Ç»ï¿½ï¿½ï¿½sourceï¿½ï¿½targetÖ»ï¿½Ç¹ï¿½Ïµï¿½ï¿½ï¿½Ü²ï¿½Í¬ï¿½ï¿½×¢ï¿½ï¿½È¼Û¹ï¿½Ïµï¿½Ç²ï¿½ï¿½ï¿½refreshï¿½ï¿½ï¿½ï¿½Îªï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½Ë¡ï¿½
 			{
 				set.remove(i);
 				break;
@@ -3694,7 +4127,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			int id=a.getIndexBidirectional(m.getSourceId(), m.getTargetId());
 			wantset.add(id);			
 		}
-		//ÅĞ¶Ïmapping¼¯ºÏÀï³ıÁËwantMapping
+		//ï¿½Ğ¶ï¿½mappingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½wantMapping
 		mapping.removeAll(wantMapping);
 		if(mapping.size()==2)
 			return true;		
@@ -3747,13 +4180,13 @@ public class RepairMapGraph implements Iterable<Integer>
 				checkList.add(i);
 				flag=true;
 			}
-			//´æÔÚ½ÇÉ«Ïà¹ØÀàµÄÀ©³ä
+			//ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			else if(aml.getURIMap().getURI(i).contains("exist_")||aml.getURIMap().getURI(i).contains("inverse_"))
 			{
 				checkList.add(i);
 				flag=true;
 			}
-			if(flag) //ÓÃÒ»±ß²»¿ÉÂú×ãµÄµãÀ´Éú³ÉÆ¥Åä
+			if(flag) //ï¿½ï¿½Ò»ï¿½ß²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¥ï¿½ï¿½
 			{
 				Set<Integer> num=a.getMappingsBidirectional(i);
 				removedList.addAll(num);
@@ -3766,7 +4199,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		int Index=a.getIndexBidirectional(source, target);
 		Mapping m=maps.get(Index);
 		
-		//¸üĞÂ¶ÔÓ¦µÄmapping
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½mapping
 		m.setStatus(MappingStatus.CORRECT);
 		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.CORRECT);	
 		RefreshSet(wantMappings,m);	
@@ -3774,7 +4207,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			wantMappings.add(m);
 		RefreshSet(unWantMappings,m);
 		
-		//¸üĞÂ¶ÔÓ¦µÄÍ¼
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½Í¼
 		addEdge(source, target);
 		addEdge(target, source);
 		
@@ -3790,7 +4223,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		int extendIndex=a.getIndexBidirectional(sourceExistInverseProperty, targetExistInverseProperty);
 		Mapping existInverseMapping=maps.get(extendIndex);
 		
-		//¸üĞÂ¶ÔÓ¦µÄmapping
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½mapping
 		existInverseMapping.setStatus(MappingStatus.CORRECT);
 		aml.getAlignment().get(existInverseMapping.getSourceId(), existInverseMapping.getTargetId()).setStatus(MappingStatus.CORRECT);	
 		RefreshSet(wantMappings,existInverseMapping);	
@@ -3798,7 +4231,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			wantMappings.add(existInverseMapping);
 		RefreshSet(unWantMappings,existInverseMapping);
 		
-		//¸üĞÂ¶ÔÓ¦µÄÍ¼
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½Í¼
 		addEdge(sourceExistInverseProperty, targetExistInverseProperty);
 		addEdge(targetExistInverseProperty, sourceExistInverseProperty);		
 	}
@@ -3809,7 +4242,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		int Index=a.getIndexBidirectional(source, target);
 		Mapping m=maps.get(Index);
 		
-		//¸üĞÂ¶ÔÓ¦µÄmapping
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½mapping
 		m.setStatus(MappingStatus.CORRECT);
 		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.CORRECT);	
 		RefreshSet(wantMappings,m);
@@ -3817,7 +4250,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			wantMappings.add(m);
 		RefreshSet(unWantMappings,m);
 		
-		//¸üĞÂ¶ÔÓ¦µÄÍ¼
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½Í¼
 		addEdge(source, target);
 		addEdge(target, source);
 		
@@ -3833,7 +4266,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		int extendIndex=a.getIndexBidirectional(sourceExistInverseProperty, targetExistInverseProperty);
 		Mapping existInverseMapping=maps.get(extendIndex);
 		
-		//¸üĞÂ¶ÔÓ¦µÄmapping
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½mapping
 		existInverseMapping.setStatus(MappingStatus.CORRECT);
 		aml.getAlignment().get(existInverseMapping.getSourceId(), existInverseMapping.getTargetId()).setStatus(MappingStatus.CORRECT);	
 		RefreshSet(wantMappings,existInverseMapping);
@@ -3841,7 +4274,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			wantMappings.add(existInverseMapping);
 		RefreshSet(unWantMappings,existInverseMapping);
 		
-		//¸üĞÂ¶ÔÓ¦µÄÍ¼
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½Í¼
 		addEdge(sourceExistInverseProperty, targetExistInverseProperty);
 		addEdge(targetExistInverseProperty, sourceExistInverseProperty);
 		
@@ -3855,7 +4288,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		int extendExistIndex=a.getIndexBidirectional(sourceExistProperty, targetExistProperty);
 		Mapping Existmapping=maps.get(extendExistIndex);
 		
-		//¸üĞÂ¶ÔÓ¦µÄmapping
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½mapping
 		Existmapping.setStatus(MappingStatus.CORRECT);
 		aml.getAlignment().get(Existmapping.getSourceId(), Existmapping.getTargetId()).setStatus(MappingStatus.CORRECT);	
 		RefreshSet(wantMappings,Existmapping);	
@@ -3863,7 +4296,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			wantMappings.add(Existmapping);
 		RefreshSet(unWantMappings,Existmapping);
 		
-		//¸üĞÂ¶ÔÓ¦µÄÍ¼
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½Í¼
 		addEdge(sourceExistProperty, targetExistProperty);
 		addEdge(targetExistProperty, sourceExistProperty);
 		
@@ -3876,7 +4309,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		int extendInverseIndex=a.getIndexBidirectional(sourceInverseProperty, targetInverseProperty);
 		Mapping Inversemapping=maps.get(extendInverseIndex);
 		
-		//¸üĞÂ¶ÔÓ¦µÄmapping
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½mapping
 		Inversemapping.setStatus(MappingStatus.CORRECT);
 		aml.getAlignment().get(Inversemapping.getSourceId(), Inversemapping.getTargetId()).setStatus(MappingStatus.CORRECT);	
 		RefreshSet(wantMappings,Inversemapping);
@@ -3884,7 +4317,7 @@ public class RepairMapGraph implements Iterable<Integer>
 			wantMappings.add(Inversemapping);
 		RefreshSet(unWantMappings,Inversemapping);
 		
-		//¸üĞÂ¶ÔÓ¦µÄÍ¼
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½Í¼
 		addEdge(sourceInverseProperty, targetInverseProperty);
 		addEdge(targetInverseProperty, sourceInverseProperty);
 	}
@@ -3894,10 +4327,10 @@ public class RepairMapGraph implements Iterable<Integer>
 		
 		Set<Integer> removeMappings=new HashSet<Integer>();
 		
-		//Ô­Ê¼µÄmapping½øĞĞ±ê¼Ç
+		//Ô­Ê¼ï¿½ï¿½mappingï¿½ï¿½ï¿½Ğ±ï¿½ï¿½
 		int Index=a.getIndexBidirectional(source, target);
 		Mapping m=maps.get(Index);		
-		//¸üĞÂ¶ÔÓ¦µÄmapping
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½mapping
 		m.setStatus(MappingStatus.INCORRECT);
 		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.INCORRECT);	
 		RefreshSet(wantMappings,m);		
@@ -3905,7 +4338,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		if(!unWantMappings.contains(m))
 			unWantMappings.add(m);
 		removeMappings.add(Index);
-		//¸üĞÂ¶ÔÓ¦µÄÍ¼
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½Í¼
 		removeEdge(source, target);	
 		removeEdge(target, source);	
 		
@@ -3921,7 +4354,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		int extendIndex=a.getIndexBidirectional(sourceExistInverseProperty, targetExistInverseProperty);
 		Mapping existInverseMapping=maps.get(extendIndex);
 		
-		//¸üĞÂ¶ÔÓ¦µÄmapping
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½mapping
 		existInverseMapping.setStatus(MappingStatus.INCORRECT);
 		aml.getAlignment().get(existInverseMapping.getSourceId(), existInverseMapping.getTargetId()).setStatus(MappingStatus.INCORRECT);	
 		RefreshSet(wantMappings,existInverseMapping);		
@@ -3929,7 +4362,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		if(!unWantMappings.contains(existInverseMapping))
 			unWantMappings.add(existInverseMapping);		
 		removeMappings.add(extendIndex);	
-		//¸üĞÂ¶ÔÓ¦µÄÍ¼
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½Í¼
 		removeEdge(sourceExistInverseProperty, targetExistInverseProperty);	
 		removeEdge(targetExistInverseProperty, sourceExistInverseProperty);	
 		
@@ -3942,7 +4375,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		
 		int Index=a.getIndexBidirectional(source, target);
 		Mapping m=maps.get(Index);		
-		//¸üĞÂ¶ÔÓ¦µÄmapping
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½mapping
 		m.setStatus(MappingStatus.INCORRECT);
 		aml.getAlignment().get(m.getSourceId(), m.getTargetId()).setStatus(MappingStatus.INCORRECT);	
 		RefreshSet(wantMappings,m);		
@@ -3950,7 +4383,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		if(!unWantMappings.contains(m))
 			unWantMappings.add(m);
 		removeMappings.add(Index);	
-		//¸üĞÂ¶ÔÓ¦µÄÍ¼
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½Í¼
 		removeEdge(source, target);	
 		removeEdge(target, source);	
 			
@@ -3965,7 +4398,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		int extendIndex=a.getIndexBidirectional(sourceExistInverseProperty, targetExistInverseProperty);
 		Mapping existInverseMapping=maps.get(extendIndex);
 		
-		//¸üĞÂ¶ÔÓ¦µÄmapping
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½mapping
 		existInverseMapping.setStatus(MappingStatus.INCORRECT);
 		aml.getAlignment().get(existInverseMapping.getSourceId(), existInverseMapping.getTargetId()).setStatus(MappingStatus.INCORRECT);	
 		RefreshSet(wantMappings,existInverseMapping);		
@@ -3973,7 +4406,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		if(!unWantMappings.contains(existInverseMapping))
 			unWantMappings.add(existInverseMapping);		
 		removeMappings.add(extendIndex);
-		//¸üĞÂ¶ÔÓ¦µÄÍ¼
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½Í¼
 		removeEdge(sourceExistInverseProperty, targetExistInverseProperty);	
 		removeEdge(targetExistInverseProperty, sourceExistInverseProperty);	
 		
@@ -3984,7 +4417,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		int extendExistIndex=a.getIndexBidirectional(sourceExistProperty, targetExistProperty);
 		Mapping Existmapping=maps.get(extendExistIndex);
 		
-		//¸üĞÂ¶ÔÓ¦µÄmapping
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½mapping
 		Existmapping.setStatus(MappingStatus.INCORRECT);
 		aml.getAlignment().get(Existmapping.getSourceId(), Existmapping.getTargetId()).setStatus(MappingStatus.INCORRECT);	
 		RefreshSet(wantMappings,Existmapping);		
@@ -3992,7 +4425,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		if(!unWantMappings.contains(Existmapping))
 			unWantMappings.add(Existmapping);	
 		removeMappings.add(extendExistIndex);	
-		//¸üĞÂ¶ÔÓ¦µÄÍ¼
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½Í¼
 		removeEdge(sourceExistProperty, targetExistProperty);	
 		removeEdge(targetExistProperty, sourceExistProperty);	
 		
@@ -4004,7 +4437,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		int extendInverseIndex=a.getIndexBidirectional(sourceInverseProperty, targetInverseProperty);
 		Mapping Inversemapping=maps.get(extendInverseIndex);
 		
-		//¸üĞÂ¶ÔÓ¦µÄmapping
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½mapping
 		Inversemapping.setStatus(MappingStatus.INCORRECT);
 		aml.getAlignment().get(Inversemapping.getSourceId(), Inversemapping.getTargetId()).setStatus(MappingStatus.INCORRECT);	
 		RefreshSet(wantMappings,Inversemapping);		
@@ -4012,7 +4445,7 @@ public class RepairMapGraph implements Iterable<Integer>
 		if(!unWantMappings.contains(Inversemapping))
 			unWantMappings.add(Inversemapping);	
 		removeMappings.add(extendInverseIndex);
-		//¸üĞÂ¶ÔÓ¦µÄÍ¼
+		//ï¿½ï¿½ï¿½Â¶ï¿½Ó¦ï¿½ï¿½Í¼
 		removeEdge(sourceInverseProperty, targetInverseProperty);	
 		removeEdge(targetInverseProperty, sourceInverseProperty);	
 		
